@@ -6,10 +6,11 @@ const storage = multer.diskStorage({
     cb(null, path.join(process.cwd(), 'public', 'images'));
   },
   filename: function(req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + '.png');
+    const ext = path.extname(file.originalname)
+    cb(null, file.fieldname + '-' + Date.now() + ext);
   },
 });
 
-const upload = multer();
+const upload = multer({ storage });
 
 export const multerUploadMiddleware = { upload }

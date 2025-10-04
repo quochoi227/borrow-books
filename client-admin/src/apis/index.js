@@ -42,13 +42,18 @@ export const uploadImageAPI = async (data) => {
   return response.data
 }
 
+export const uploadImagesAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/books/upload_images`, data)
+  return response.data
+}
+
 // Publishers
-export const fetchSourcesAPI = async () => {
+export const fetchPublishersAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/sources`)
   return response.data
 }
 
-export const addNewSourceAPI = async (data) => {
+export const addNewPublisherAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/sources`, data)
   return response.data
 }
@@ -56,5 +61,10 @@ export const addNewSourceAPI = async (data) => {
 // Requests
 export const getAllRequests = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/requests`)
+  return response.data
+}
+
+export const updateRequestAPI = async (requestId, data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/requests/${requestId}`, data)
   return response.data
 }

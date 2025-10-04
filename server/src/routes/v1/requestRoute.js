@@ -1,16 +1,21 @@
 import express from 'express'
-import { requestController } from '~/controllers/requestController'
-import { authMiddleware } from '~/middlewares/authMiddleware'
+import { requestController } from '../../controllers/requestController.js'
 
 const Router = express.Router()
 
-// ADD BOOK
-Router.post('/', authMiddleware.isAuthorized, requestController.addRequest)
+// ADD REQUEST
+Router.post('/', requestController.addRequest)
 
-// GET ALL BOOKS
-Router.get('/', authMiddleware.isAuthorized, requestController.getAllRequests)
+// GET ALL REQUESTS
+Router.get('/', requestController.getAllRequests)
 
-// UPDATE A BOOK
-Router.put('/:id', authMiddleware.isAuthorized, requestController.updateRequest)
+// GET REQUESTS BY USERID
+Router.get('/:id', requestController.getRequestsById)
+
+// UPDATE A REQUEST
+Router.put('/:id', requestController.updateRequest)
+
+// DELETE A REQUEST
+Router.delete('/:id', requestController.deleteRequest)
 
 export const requestRoute = Router

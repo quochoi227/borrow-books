@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { Book } from '~/models/bookModel.js'
+import { Book } from '../models/bookModel.js'
 import { CloudinaryProvider } from '../providers/CloudinaryProvider.js'
 
 export const bookController = {
@@ -23,17 +23,7 @@ export const bookController = {
   // GET ALL BOOKS
   getAllBooks: async (req, res) => {
     try {
-      const books = await Book.aggregate([
-        { $match: {} },
-        {
-          $lookup: {
-            from: 'NhaXuatBan',
-            localField: 'publisherId',
-            foreignField: 'publisherId',
-            as: 'source'
-          }
-        }
-      ])
+      const books = await Book.find().populate('nhaXuatBan').exec()
       res.status(200).json(books)
     } catch (error) {
       res.status(500).json(error)
@@ -43,18 +33,8 @@ export const bookController = {
   getABook: async (req, res) => {
     try {
       // const book = await Book.findById(req.params.id)
-      const result = await Book.aggregate([
-        { $match: { _id: new mongoose.Types.ObjectId(req.params.id) } },
-        {
-          $lookup: {
-            from: 'NhaXuatBan',
-            localField: 'publisherId',
-            foreignField: 'publisherId',
-            as: 'source'
-          }
-        }
-      ])
-      res.status(200).json(result[0])
+      const result = await Book.findById(req.params.id).populate('nhaXuatBan').exec()
+      res.status(200).json(result)
     } catch (error) {
       res.status(500).json(error)
     }
@@ -93,18 +73,21 @@ export const bookController = {
   // }
   uploadImage: async (req, res) => {
     try {
-      const result = await CloudinaryProvider.streamUpload(req.file.buffer, 'book_test')
-      res.status(200).json(result)
+      // const result = await CloudinaryProvider.streamUpload(req.file.buffer, 'book_test')
+      res.status(200).json({
+        img: req.file.filename
+      })
+      // res.status(200).json('ok')
     } catch (error) {
       res.status(500).json(error)
     }
   },
-  // uploadImage: async (req, res) => {
-  //   try {
-  //     const result = await CloudinaryProvider.streamUpload(req.files[0].buffer, 'book_images')
-  //     res.status(200).json(result)
-  //   } catch (error) {
-  //     res.status(500).json(error)
-  //   }
-  // }
+  uploadImages: async (req, res) => {
+    try {
+      const imgs = req.files.map((file) => file.filename)
+      res.status(200).json(imgs)
+    } catch (error) {
+      res.status(500).json(error)
+    }
+  }
 }

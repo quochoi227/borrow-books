@@ -1,9 +1,9 @@
 import express from 'express'
-import { bookRoute } from './bookRoute'
-import { authorRoute } from './authorRoute'
-import { userRoute } from './userRoute'
-import { publisherRoute } from './publisherRoute'
-import { requestRoute } from './requestRoute'
+import { bookRoute } from './bookRoute.js'
+import { authorRoute } from './authorRoute.js'
+import { userRoute } from './userRoute.js'
+import { publisherRoute } from './publisherRoute.js'
+import { requestRoute } from './requestRoute.js'
 
 const Router = express.Router()
 

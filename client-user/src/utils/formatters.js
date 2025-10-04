@@ -1,10 +1,11 @@
+import { format, parseISO } from 'date-fns'
+
 export const formatDate = (rawDate) => {
-  const date = new Date(rawDate);
+  const formatted = format(parseISO(rawDate), 'dd-MM-yyyy')
+  return formatted
+}
 
-  // Lấy ngày, tháng, năm
-  const day = date.getDate(); // 29
-  const month = date.getMonth() + 1; // 9 (getMonth trả về 0–11)
-  const year = date.getFullYear(); // 2025
-
-  return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
+export const formatCurrency = (amount) => {
+  const formatted = amount.toLocaleString('vi-VN') + ' VNĐ'
+  return formatted
 }

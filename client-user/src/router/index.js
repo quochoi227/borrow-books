@@ -15,27 +15,27 @@ const router = createRouter({
       redirect: '/home'
     },
     {
-      path: '',
+      path: '/',
       component: ProtectedRoute,
       children: [
         {
-          path: '/',
+          path: '',
           component: MainLayout,
           children: [
             {
               path: 'home',
               component: Home
-            },
-            {
-              path: 'borrowing-history',
-              component: BorrowingHistory
             }
           ]
         },
         {
-          path: '/books/:id',
+          path: 'books/:id',
           component: BookDetails
         },
+        {
+          path: 'borrowing-history',
+          component: BorrowingHistory
+        }
       ]
     },
     {

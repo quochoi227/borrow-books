@@ -1,5 +1,5 @@
-import { Author } from '~/models/authorModel.js'
-import { Book } from '~/models/bookModel.js'
+import { Author } from '../models/authorModel.js'
+import { Book } from '../models/bookModel.js'
 
 export const authorController = {
   // ADD AN AUTHOR

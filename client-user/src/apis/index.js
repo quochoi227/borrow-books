@@ -65,7 +65,17 @@ export const getAllRequests = async () => {
   return response.data
 }
 
+export const getRequestsByIdAPI = async (userId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/requests/${userId}`)
+  return response.data
+}
+
 export const addNewRequestAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/requests`, data)
+  return response.data
+}
+
+export const deleteRequestAPI = async (requestId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/requests/${requestId}`)
   return response.data
 }

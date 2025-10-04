@@ -1,13 +1,13 @@
 import mongoose from 'mongoose'
 
 const publisherSchema = new mongoose.Schema({
-  publisherId: {
+  maNXB: {
     type: String
   },
-  name: {
+  tenNXB: {
     type: String
   },
-  address: {
+  diaChi: {
     type: String
   }
 })

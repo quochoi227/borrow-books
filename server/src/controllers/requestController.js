@@ -1,13 +1,20 @@
-import { Request } from '~/models/requestModel'
+import { Request } from '../models/requestModel.js'
+import { Book } from '../models/bookModel.js'
 import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGRjMDliOTJhNzNjYTZlNDVjODZhMDMiLCJtYURvY0dpYSI6IjY4ZGMwOWI5MmE3M2NhNmU0NWM4NmEwNCIsImRpZW5UaG9haSI6IjA4ODg4ODg4ODkiLCJpYXQiOjE3NTkyNTA4ODUsImV4cCI6MTc1OTI1NDQ4NX0.VD_Hpdh2LV8ZnCVY27YjZjX0_nS5VPTatPVv92N8_tw
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGRjMDliOTJhNzNjYTZlNDVjODZhMDMiLCJtYURvY0dpYSI6IjY4ZGMwOWI5MmE3M2NhNmU0NWM4NmEwNCIsImRpZW5UaG9haSI6IjA4ODg4ODg4ODkiLCJpYXQiOjE3NTkyNTA4ODUsImV4cCI6MTc1OTI1NDQ4NX0.VD_Hpdh2LV8ZnCVY27YjZjX0_nS5VPTatPVv92N8_tw
+import ApiError from '../utils/ApiError.js'
 
 export const requestController = {
   addRequest: async (req, res, next) => {
     try {
+      const { maDocGia } = req.body
+      const allRequests = await Request.find({ maDocGia })
+      const borrowing =  allRequests.filter((request) => {
+        return request.trangThai === 'chờ duyệt' || request.trangThai === 'đang mượn'
+      })
+      if (borrowing.length >= 3) {
+        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Không thể mượn thêm! Vui lòng kiểm tra lại số lượng yêu cầu mượn sách và số lượng sách đang mượn!')
+      }
       const newRequest = new Request(req.body)
       const createdRequest = await newRequest.save()
       res.status(StatusCodes.CREATED).json(createdRequest)
@@ -20,21 +27,18 @@ export const requestController = {
       // const matchCondition = req.jwtDecoded.maDocGia ? {
       //   maDocGia: new mongoose.Types.ObjectId(req.jwtDecoded.maDocGia)
       // } : {}
-      const requests = await Request.aggregate([
-        { $match: {} },
-        { $lookup: {
-          from: 'DocGia',
-          localField: 'maDocGia',
-          foreignField: 'maDocGia',
-          as: 'docGia'
-        } },
-        { $lookup: {
-          from: 'Sach',
-          localField: 'maSach',
-          foreignField: 'bookId',
-          as: 'sach'
-        } }
-      ])
+      const requests = await Request.find().populate('docGia').populate('sach')
+      res.status(StatusCodes.OK).json(requests)
+    } catch (error) {
+      next(error)
+    }
+  },
+  getRequestsById: async (req, res, next) => {
+    try {
+      const userId = req.params.id
+      const requests = await Request.find({
+        maDocGia: new mongoose.Types.ObjectId(userId)
+      }).populate('docGia').populate('sach')
       res.status(StatusCodes.OK).json(requests)
     } catch (error) {
       next(error)
@@ -42,8 +46,53 @@ export const requestController = {
   },
   updateRequest: async (req, res, next) => {
     try {
-      const updatedRequest = await Request.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+      const { trangThai, maSach } = req.body
+      const targetBook = await Book.findOne({
+        maSach
+      })
+      let reqBody
+      if (trangThai === 'đang mượn') {
+        if (targetBook) {
+          await Book.findOneAndUpdate(
+            { maSach }, {
+              $set: {
+                soQuyen: targetBook.soQuyen - 1
+              }
+            })
+        }
+        reqBody = {
+          ...req.body,
+          ngayMuon: Date.now(),
+          hanTra: Date.now() + 7 * 24 * 60 * 60 * 1000
+        }
+      }
+      if (trangThai === 'đã trả') {
+        if (targetBook) {
+          await Book.findOneAndUpdate(
+            { maSach }, {
+              $set: {
+                soQuyen: targetBook.soQuyen + 1
+              }
+            }
+          )
+        }
+        reqBody = {
+          ...req.body,
+          ngayTra: Date.now()
+        }
+      }
+      const updatedRequest = await Request.findByIdAndUpdate(req.params.id, { $set: reqBody }, { new: true })
       res.status(StatusCodes.OK).json(updatedRequest)
+    } catch (error) {
+      next(error)
+    }
+  },
+  deleteRequest: async (req, res, next) => {
+    try {
+      const deletedRequest = await Request.findOneAndDelete({
+        _id: req.params.id
+      })
+      res.status(StatusCodes.OK).json(deletedRequest)
     } catch (error) {
       next(error)
     }

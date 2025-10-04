@@ -1,23 +1,31 @@
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import bodyParser from 'body-parser'
-import morgan from 'morgan'
-import { APIs_V1 } from './routes/v1'
-import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
-import { corsOptions } from './configs/cors'
-import { env } from './configs/environment'
+import { APIs_V1 } from './routes/v1/index.js'
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware.js'
+import { corsOptions } from './configs/cors.js'
+import { env } from './configs/environment.js'
 import cookieParser from 'cookie-parser'
+import path from 'path'
 
 const app = express()
 
 // Connect database
 mongoose.connect(env.MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB connected successfully.')
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error')
+  })
 
-app.use(bodyParser.json({ limit: '50mb' }))
+app.use(express.json())
 app.use(cookieParser())
 app.use(cors(corsOptions))
-app.use(morgan('common'))
+
+// Static
+
+app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')))
 
 // Routes
 app.use('/v1', APIs_V1)

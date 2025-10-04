@@ -1,34 +1,44 @@
 import mongoose from 'mongoose'
 
 const bookSchema = new mongoose.Schema({
-  bookId: {
+  maSach: {
     type: String,
     unique: true
   },
-  name: {
+  tenSach: {
     type: String
   },
-  unitPrice: {
-    type: String
-  },
-  stock: {
+  donGia: {
     type: Number
   },
-  remaining: {
+  soQuyen: {
     type: Number
   },
-  publishedYear: {
+  namXuatBan: {
+    type: Number
+  },
+  maNXB: {
     type: String
   },
-  publisherId: {
+  moTa: {
     type: String
   },
-  description: {
+  anhBia: {
     type: String
   },
-  image: {
-    type: String
+  anhChiTiet: {
+    type: [String]
   }
+})
+
+bookSchema.set('toObject', { virtuals: true })
+bookSchema.set('toJSON', { virtuals: true })
+
+bookSchema.virtual('nhaXuatBan', {
+  ref: 'Publisher',
+  localField: 'maNXB',
+  foreignField: 'maNXB',
+  justOne: true
 })
 
 export const Book = mongoose.model('Book', bookSchema, 'Sach')

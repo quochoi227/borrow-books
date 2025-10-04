@@ -1,11 +1,11 @@
-import { User } from '~/models/userModel'
+import { User } from '../models/userModel.js'
 import bcryptjs from 'bcryptjs'
-import ApiError from '~/utils/ApiError'
+import ApiError from '../utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
-import { JwtProvider } from '~/providers/JwtProvider'
-import { env } from '~/configs/environment'
+import { JwtProvider } from '../providers/JwtProvider.js'
+import { env } from '../configs/environment.js'
 import ms from 'ms'
-import { pickUser } from '~/utils/formatters'
+import { pickUser } from '../utils/formatters.js'
 
 export const userController = {
   register: async (req, res, next) => {

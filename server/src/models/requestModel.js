@@ -5,12 +5,15 @@ const requestSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId
   },
   maSach: {
-    // type: mongoose.Schema.Types.ObjectId
     type: String
+  },
+  ngayYeuCau: {
+    type: Date,
+    default: () => Date.now()
   },
   ngayMuon: {
     type: Date,
-    default: () => Date.now()
+    default: null
   },
   ngayTra: {
     type: Date,
@@ -18,12 +21,30 @@ const requestSchema = new mongoose.Schema({
   },
   hanTra: {
     type: Date,
-    default: () => Date.now() + 7 * 24 * 60 * 60 * 1000
+    // default: () => Date.now() + 7 * 24 * 60 * 60 * 1000
+    default: null
   },
-  status: {
+  trangThai: {
     type: String,
-    default: 'đang mượn'
+    default: 'chờ duyệt'
   }
+})
+
+requestSchema.set('toObject', { virtuals: true })
+requestSchema.set('toJSON', { virtuals: true })
+
+requestSchema.virtual('docGia', {
+  ref: 'User',
+  localField: 'maDocGia',
+  foreignField: 'maDocGia',
+  justOne: true
+})
+
+requestSchema.virtual('sach', {
+  ref: 'Book',
+  localField: 'maSach',
+  foreignField: 'maSach',
+  justOne: true
 })
 
 export const Request = mongoose.model('Request', requestSchema, 'TheoDoiMuonSach')

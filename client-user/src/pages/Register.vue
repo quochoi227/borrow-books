@@ -19,10 +19,6 @@ const registerInfo = reactive({
 const handleSubmit = (values) => {
   registerAPI(values).then(() => {
     router.push('/login')
-    toast.success("Đăng ký tài khoản thành công!", {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
   })
 }
 

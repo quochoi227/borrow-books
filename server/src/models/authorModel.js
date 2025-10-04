@@ -1,11 +1,11 @@
 import mongoose from 'mongoose'
 
 const authorSchema = new mongoose.Schema({
-  name: {
+  tenTacGia: {
     type: String,
     required: true
   },
-  dob: {
+  namSinh: {
     type: String,
     required: true
   },

@@ -1,14 +1,11 @@
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue'
-import { addNewSourceAPI, fetchSourcesAPI, deleteBookAPI } from '@/apis'
+import { addNewPublisherAPI, fetchPublishersAPI, deleteBookAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
-import ModalDialog from '@/components/ModalDialog.vue'
-import { createConfirmDialog } from 'vuejs-confirm-dialog'
-import { cloneDeep } from 'lodash'
 import BookDetails from '@/pages/BookDetails.vue'
 
 const disableSubmit = ref(false)
-const sources = ref([])
+const publishers = ref([])
 const isActive = ref(false)
 
 const rowsPerPage = ref(5)
@@ -31,7 +28,7 @@ const handleDecrease = () => {
   }
 }
 
-watch(() => sources.value.length, (newVal) => {
+watch(() => publishers.value.length, (newVal) => {
   pageSum.value = Math.ceil(newVal / rowsPerPage.value)
   if (newVal % rowsPerPage.value === 0 && currentPage.value > 1 && currentPage.value === pageSum.value + 1) {
     currentPage.value--
@@ -39,76 +36,41 @@ watch(() => sources.value.length, (newVal) => {
 })
 
 onMounted(() => {
-  fetchSourcesAPI().then((data) => {
-    sources.value = data
+  fetchPublishersAPI().then((data) => {
+    publishers.value = data
     pageSum.value = Math.ceil(data.length / rowsPerPage.value)// booksAfter.value = data.slice((currentPage.value - 1) * rowsPerPage.value, (currentPage.value - 1) * rowsPerPage.value + rowsPerPage.value)
   })
 })
 
-const sourcesAfter = computed(() => {
+const publishersAfter = computed(() => {
   if (searchValue.value === '') {
     filterMode.value = false
-    return sources.value.slice((currentPage.value - 1) * rowsPerPage.value, (currentPage.value - 1) * rowsPerPage.value + rowsPerPage.value)
+    return publishers.value.slice((currentPage.value - 1) * rowsPerPage.value, (currentPage.value - 1) * rowsPerPage.value + rowsPerPage.value)
   } else {
     filterMode.value = true
-    return sources.value.filter((book) => {
-      return book.name.toLowerCase().includes(searchValue.value.toLowerCase())
+    return publishers.value.filter((publisher) => {
+      return publisher.tenNXB.toLowerCase().includes(searchValue.value.toLowerCase())
     })
   }
 })
 
-const sourceData = reactive({
-  publisherId: '',
-  name: '',
-  address: ''
+const publisherData = reactive({
+  maNXB: '',
+  tenNXB: '',
+  diaChi: ''
 })
 
 const handleSubmit = () => {
-  addNewSourceAPI(sourceData).then((data) => {
-    sources.value.push(data)
-    if (currentPage.value === pageSum.value && sourcesAfter.length < rowsPerPage.value) {
-      sourcesAfter.push(data)
+  addNewPublisherAPI(publisherData).then((data) => {
+    publishers.value.push(data)
+    if (currentPage.value === pageSum.value && publishersAfter.length < rowsPerPage.value) {
+      publishersAfter.push(data)
     }
     toast.success('Thêm nhà xuất bản thành công!', {
       autoClose: 3000,
       position: toast.POSITION.BOTTOM_LEFT,
     })
   })
-}
-
-const currentActiveBook = ref()
-
-const handleActiveBook = (book) => {
-  currentActiveBook.value = cloneDeep(book)
-  isActive.value = true
-}
-
-const handleDeleteBook = (publisherId) => {
-  deleteBookAPI(publisherId).then(() => {
-    toast.success("Xóa sách thành công", {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
-    sources.value = sources.value.filter((book) => {
-      return book._id !== publisherId
-    })
-  })
-}
-
-const handleUpdateBook = (book) => {
-  const targetBook = sources.value.find((b) => b._id === book._id)
-  for (let key in book) {
-    targetBook[key] = book[key]
-  }
-}
-
-const dialog = createConfirmDialog(ModalDialog)
-
-const confirmDelete = async (bookId) => {
-  const { isCanceled } = await dialog.reveal({ title: 'Xác nhận xóa?' })
-
-  if(isCanceled) return
-  handleDeleteBook(bookId)
 }
 </script>
 
@@ -121,19 +83,19 @@ const confirmDelete = async (bookId) => {
           <div class="col-span-12">
             <fieldset class="fieldset">
               <legend class="fieldset-legend">Mã nhà xuất bản</legend>
-              <input v-model="sourceData.publisherId" type="text" class="input" placeholder="NXB001" />
+              <input v-model="publisherData.maNXB" type="text" class="input" placeholder="NXB001" />
             </fieldset>
           </div>
           <div class="col-span-12">
             <fieldset class="fieldset">
               <legend class="fieldset-legend">Tên nhà xuất bản</legend>
-              <input v-model="sourceData.name" type="text" class="input" placeholder="Kim Đồng" />
+              <input v-model="publisherData.tenNXB" type="text" class="input" placeholder="Kim Đồng" />
             </fieldset>
           </div>
           <div class="col-span-12">
             <fieldset class="fieldset">
               <legend class="fieldset-legend">Địa chỉ</legend>
-              <input v-model="sourceData.address" type="text" class="input" placeholder="123 treet abc" />
+              <input v-model="publisherData.diaChi" type="text" class="input" placeholder="123 treet abc" />
             </fieldset>
           </div>
           <div class="col-span-12 flex justify-center">
@@ -147,8 +109,8 @@ const confirmDelete = async (bookId) => {
       </form>
     </dialog>
     <!-- name of each tab group should be unique -->
-    <div class="p-2 mt-1">
-      <div class="p-2 flex gap-2 bg-white rounded-lg relative">
+    <div class="m-2 mt-3 p-2 bg-white rounded shadow-md">
+      <div class="p-2 flex gap-2 relative">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tìm kiếm</legend>
           <label class="input">
@@ -161,67 +123,67 @@ const confirmDelete = async (bookId) => {
           Thêm NXB
         </button>
       </div>
-    </div>
-    <div class="overflow-auto px-2 min-h-[460px] max-h-[520px]">
-      <table class="table overflow-hidden shadow-md bg-white">
-        <thead>
-          <tr class="bg-primary text-white">
-            <th>Mã NXB</th>
-            <th>Tên</th>
-            <th>Địa chỉ</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(source) in sourcesAfter" class="hover:bg-base-300">
-            <td class="py-1">{{ source.publisherId }}</td>
-            <td class="py-1 max-w-[200px]">
-              <div
-                style="
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  word-break: break-word;
+      <div class="overflow-auto px-2 h-[460px]">
+        <table class="table overflow-hidden shadow-md bg-white">
+          <thead>
+            <tr class="bg-primary text-white">
+              <th>Mã NXB</th>
+              <th>Tên</th>
+              <th>Địa chỉ</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(publisher) in publishersAfter" class="hover:bg-base-300">
+              <td class="py-1">{{ publisher.maNXB }}</td>
+              <td class="py-1 max-w-[200px]">
+                <div
+                  style="
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    word-break: break-word;
+                    "
+                  class="text-sm leading-snug"
+                >
+                  {{ publisher.tenNXB }}
+                </div>
+              </td>
+              <td class="py-1 max-w-[200px]">
+                <div
+                  style="
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    word-break: break-word;
                   "
-                class="text-sm leading-snug"
-              >
-                {{ source.name }}
-              </div>
-            </td>
-            <td class="py-1 max-w-[200px]">
-              <div
-                style="
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  word-break: break-word;
-                "
-                class="text-sm leading-snug"
-              >
-                {{ source.address }}
-              </div>
-            </td>
-            <td class="py-1 space-x-1">
-              <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-circle">
-                <font-awesome-icon icon="fa-solid fa-trash" />
-              </button>
-              <button @click="handleActiveBook(book)" class="btn btn-sm btn-info btn-circle">
-                <font-awesome-icon icon="fa-solid fa-list-ul" />
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-if="!filterMode" class="flex justify-end mt-1 px-2">
-      <div class="join">
-        <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
-        <button v-for="n in pageSum" @click="() => currentPage = n" :class="['join-item btn', { 'bg-main text-white': currentPage === n }]">{{ n }}</button>
-        <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === pageSum }]">»</button>
+                  class="text-sm leading-snug"
+                >
+                  {{ publisher.diaChi }}
+                </div>
+              </td>
+              <td class="py-1 space-x-1">
+                <button class="btn btn-error btn-sm btn-circle">
+                  <font-awesome-icon icon="fa-solid fa-trash" />
+                </button>
+                <button class="btn btn-sm btn-info btn-circle">
+                  <font-awesome-icon icon="fa-solid fa-list-ul" />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="!filterMode" class="flex justify-end mt-1 px-2">
+        <div class="join">
+          <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
+          <button v-for="n in pageSum" @click="() => currentPage = n" :class="['join-item btn', { 'bg-main text-white': currentPage === n }]">{{ n }}</button>
+          <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === pageSum }]">»</button>
+        </div>
       </div>
     </div>
   </div>

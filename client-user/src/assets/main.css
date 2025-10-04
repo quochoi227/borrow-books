@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
 #app {
-  font-family: Inter;
+  font-family: Roboto;
 }
 
 @theme {
@@ -12,14 +12,17 @@
   --color-text-primary: #213547;
 }
 
-@utility input {
-  @apply ring-0 transition-shadow duration-100 focus:outline-none focus:border-transparent focus:ring-sky-200 focus:ring-4 focus-within:outline-none focus-within:border-transparent focus-within:ring-sky-200 focus-within:ring-4
-}
+.input,
+.file-input,
+.select,
+.textarea {
+  outline-offset: 0;
+  outline-width: 0;
+  outline-width: var(--width-3);
+  outline-color: var(--color-sky-500);
 
-@utility textarea {
-  @apply ring-0 transition-shadow duration-100 focus:outline-none focus:border-transparent focus:ring-sky-200 focus:ring-4
-}
-
-@utility select {
-  @apply ring-0 transition-shadow duration-100 focus:outline-none focus:border-transparent focus:ring-sky-200 focus:ring-4 focus-within:outline-none focus-within:border-transparent focus-within:ring-sky-200 focus-within:ring-4
+  &:focus,
+  &:focus-within {
+    border-color: transparent;
+  }
 }

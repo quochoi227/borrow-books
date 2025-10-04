@@ -1,7 +1,7 @@
-import { Publisher } from '~/models/publisherModel'
+import { Publisher } from '../models/publisherModel.js'
 
 export const publisherController = {
-  getAllSources: async (req, res) => {
+  getAllPublishers: async (req, res) => {
     try {
       const publisher = await Publisher.find()
       res.status(200).json(publisher)
@@ -9,7 +9,7 @@ export const publisherController = {
       next(error)
     }
   },
-  addSource: async (req, res) => {
+  addPublisher: async (req, res) => {
     try {
       const newPublisher = new Publisher(req.body)
       const createdPublisher = await newPublisher.save()

@@ -19,7 +19,7 @@ const navItemClasses = 'px-2 text-gray-500 hover:text-gray-800 transition-color 
 const activeItemClasses = 'font-semibold text-main hover:text-main'
 </script>
 <template>
-  <div class="navbar py-3 min-h-[68px] max-h-[68px] shadow-sm">
+  <div class="navbar py-3 min-h-[68px] max-h-[68px] border-b border-base-300">
     <div class="flex justify-between w-full px-6">
       <div class="flex items-center">
         <div class="flex items-center gap-2">
@@ -29,7 +29,7 @@ const activeItemClasses = 'font-semibold text-main hover:text-main'
             <p class="text-sm whitespace-nowrap">Mượn sách dễ dàng</p>
           </div>
         </div>
-        <label class="input ml-14">
+        <label v-if="!route.path.includes('borrowing-history') && !route.path.includes('books')" class="input ml-14">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
           <input type="search" required placeholder="Search" />
         </label>
