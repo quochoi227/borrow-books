@@ -2,15 +2,15 @@
 import { useRoute, useRouter } from 'vue-router'
 import Login from './Login.vue'
 import Register from './Register.vue'
-import { useUserStore } from '@/stores/userStore'
+import { useAdminStore } from '@/stores/adminStore'
 import auth_bg from '@/assets/images/login-register-bg-resized.jpg'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
+const adminStore = useAdminStore()
 
-if (userStore.currentActiveUser) {
-  router.replace('/home')
+if (adminStore.currentActiveAdmin) {
+  router.replace('/')
 }
 </script>
 <template>

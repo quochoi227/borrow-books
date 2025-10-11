@@ -5,7 +5,10 @@ import { multerUploadMiddleware } from '../../middlewares/multerUploadMiddleware
 const Router = express.Router()
 
 // ADD BOOK
-Router.post('/', bookController.addBook)
+Router.post('/', multerUploadMiddleware.upload.fields([
+  { name: 'bookImg', maxCount: 1 },
+  { name: 'bookImgs', maxCount: 10 }
+]), bookController.addBook)
 
 // GET ALL BOOKS
 Router.get('/', bookController.getAllBooks)
@@ -14,7 +17,10 @@ Router.get('/', bookController.getAllBooks)
 Router.get('/:id', bookController.getABook)
 
 // UPDATE A BOOK
-Router.put('/:id', bookController.updateABook)
+Router.put('/:id', multerUploadMiddleware.upload.fields([
+  { name: 'bookImg', maxCount: 1 },
+  { name: 'bookImgs', maxCount: 10 }
+]), bookController.updateABook)
 
 // DELETE A BOOK
 Router.delete('/:id', bookController.deleteABook)

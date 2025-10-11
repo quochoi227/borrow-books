@@ -1,12 +1,15 @@
 <script setup>
 import book_icon from '@/assets/images/book-svgrepo-com.svg'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
-const sidebarItemClassess = 'flex items-center max-h-[40px] overflow-hidden gap-4 px-4 py-3 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors duration-200'
-const activeClasses = 'rounded text-gray-900 hover:text-gray-900 font-semibold bg-gray-100 hover:bg-gray-100'
-
+// const sidebarItemClassess = 'gap-3 text-[16px] text-gray-600'
+const sidebarItemClassess = computed(() => {
+  return `text-[16px] gap-3 text-gray-500 flex ${isOpen.value ? 'justify-start' : 'justify-center'}`
+})
+// const activeItemClasses = 'menu-active'
+const activeItemClasses = 'bg-primary text-white'
 const isOpen = ref(true)
 </script>
 <template>
@@ -18,8 +21,42 @@ const isOpen = ref(true)
         <!-- <p>Mượn sách dễ dàng</p> -->
       </div>
     </div>
-    <div class="px-4 mt-4">
-      <ul class="cursor-pointer">
+    <div class="mt-4">
+      <ul class="menu gap-1 w-full cursor-pointer">
+        <router-link to="/dashboard">
+          <li>
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/dashboard' }]">
+              <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
+              <p v-if="isOpen" class="whitespace-nowrap">Dashboard</p>
+            </span>
+          </li>
+        </router-link>
+        <router-link to="/quan-ly-sach">
+          <li>
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/quan-ly-sach' }]">
+              <font-awesome-icon icon="fa-solid fa-book" class="text-xl" />
+              <p v-if="isOpen" class="whitespace-nowrap">Quản lý sách</p>
+            </span>
+          </li>
+        </router-link>
+        <router-link to="/quan-ly-muon-sach">
+          <li>
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/quan-ly-muon-sach' }]">
+              <font-awesome-icon icon="fa-solid fa-hand" class="text-xl" />
+              <p v-if="isOpen" class="whitespace-nowrap">Quản lý mượn sách</p>
+            </span>
+          </li>
+        </router-link>
+        <router-link to="/nha-xuat-ban">
+          <li>
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/nha-xuat-ban' }]">
+              <font-awesome-icon icon="fa-solid fa-house-user" class="text-xl" />
+              <p v-if="isOpen" class="whitespace-nowrap">Nhà xuất bản</p>
+            </span>
+          </li>
+        </router-link>
+      </ul>
+      <!-- <ul class="cursor-pointer">
         <router-link to="/dashboard">
           <li :style="{ justifyContent: isOpen ? 'flex-start' : 'center' }" :class="[sidebarItemClassess, { [activeClasses]: route.path === '/dashboard' }]">
             <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
@@ -44,7 +81,7 @@ const isOpen = ref(true)
             <p v-if="isOpen" class="whitespace-nowrap">Nhà xuất bản</p>
           </li>
         </router-link>
-      </ul>
+      </ul> -->
     </div>
     <div @click="isOpen = !isOpen" class="mt-auto w-full py-3 flex justify-center cursor-pointer">
       <button v-if="isOpen" class="btn btn-circle">

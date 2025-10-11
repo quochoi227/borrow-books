@@ -41,8 +41,8 @@ const updateRequest = (requestId, status, bookId) => {
 <template>
   <div class="px-2 py-6">
     <h2 class="text-xl font-semibold mb-4 text-center">Yêu cầu mượn sách</h2>
-    <div class="h-[540px] overflow-x-auto">
-      <table class="table w-full bg-white table-pin-rows">
+    <div class="h-[540px] w-full overflow-x-auto">
+      <table class="table bg-white table-pin-rows">
         <thead>
           <tr class="bg-primary text-white overflow-hidden">
             <th>TT</th>
@@ -59,7 +59,7 @@ const updateRequest = (requestId, status, bookId) => {
         </thead>
         <tbody>
           <tr v-for="(req, index) in requests" :key="req.id" class="hover:bg-base-300">
-            <td>{{ req.docGia.maDocGia }}</td>
+            <td>{{ index + 1 }}</td>
             <td class="whitespace-nowrap">{{ req.docGia.hoLot + ' ' + req.docGia.ten }}</td>
             <td>{{ req.sach.maSach }}</td>
             <td
@@ -84,22 +84,22 @@ const updateRequest = (requestId, status, bookId) => {
             <td>
               <div class="flex gap-1">
                 <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Chấp nhận">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.ACCEPT, req.maSach)" class="btn btn-circle btn-xs btn-success">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.ACCEPT, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-success">
                     <font-awesome-icon icon="fa-solid fa-check" />
                   </button>
                 </div>
                 <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Từ chối">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECT, req.maSach)" class="btn btn-circle btn-xs btn-error">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECT, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-error">
                     <font-awesome-icon icon="fa-solid fa-xmark" />
                   </button>
                 </div>
                 <div v-if="req.trangThai === REQUEST_STATUS.REJECT" class="tooltip" data-tip="Từ chối">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)" class="btn btn-circle btn-xs btn-warning">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-warning">
                     <font-awesome-icon icon="fa-solid fa-rotate-left" />
                   </button>
                 </div>
                 <div v-if="req.trangThai === REQUEST_STATUS.ACCEPT" class="tooltip" data-tip="Đã trả sách">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.RETURNED, req.maSach)" class="btn btn-circle btn-xs btn-success">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.RETURNED, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-success">
                     <font-awesome-icon icon="fa-solid fa-person-walking-arrow-loop-left" />
                   </button>
                 </div>

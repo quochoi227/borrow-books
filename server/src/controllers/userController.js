@@ -34,33 +34,29 @@ export const userController = {
       if (!bcryptjs.compareSync(req.body.matKhau, existUser.matKhau)) {
         throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Số điện thoại hoặc mật khẩu không đúng')
       }
-      const userInfo = {
-        _id: existUser._id,
-        maDocGia: existUser.maDocGia,
-        dienThoai: existUser.dienThoai
-      }
-      const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
-      const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)
+      // const userInfo = {
+      //   _id: existUser._id,
+      //   maDocGia: existUser.maDocGia,
+      //   dienThoai: existUser.dienThoai
+      // }
+      // const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
+      // const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)
 
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: ms('14 days')
-      })
+      // res.cookie('accessToken', accessToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'none',
+      //   maxAge: ms('14 days')
+      // })
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: ms('14 days')
-      })
+      // res.cookie('refreshToken', refreshToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'none',
+      //   maxAge: ms('14 days')
+      // })
 
-      res.status(200).json({
-        ...pickUser(existUser.toObject()),
-        accessToken,
-        refreshToken
-      })
+      res.status(200).json(pickUser(existUser))
     } catch (error) {
       next(error)
     }

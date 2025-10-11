@@ -2,14 +2,14 @@
 import { onMounted, reactive } from 'vue'
 import { Form, Field } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useAdminStore } from '@/stores/adminStore'
 import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
+const adminStore = useAdminStore()
 
-const { loginUserAPI } = userStore
+const { loginAdminAPI } = adminStore
 
 const registerInfo = reactive({
   dienThoai: '',
@@ -18,10 +18,10 @@ const registerInfo = reactive({
 
 const handleSubmit = (values) => {
   toast.promise(
-    loginUserAPI(values),
+    loginAdminAPI(values),
     { pending: 'Đang đăng nhập' }
   ).then(() => {
-    router.push('/home')
+    router.push('/')
   })
 }
 

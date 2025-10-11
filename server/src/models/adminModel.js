@@ -1,22 +1,15 @@
 import mongoose from 'mongoose'
 // import { getNextSequence } from '../utils/formatters.js'
 
-const userSchema = new mongoose.Schema({
-  maDocGia: {
-    // type: String
+const adminSchema = new mongoose.Schema({
+  maNhanVien: {
     type: mongoose.Schema.Types.ObjectId,
     default: () => new mongoose.Types.ObjectId()
   },
-  hoLot: {
+  hoTenNV: {
     type: String
   },
-  ten: {
-    type: String
-  },
-  ngaySinh: {
-    type: String
-  },
-  phai: {
+  chucVu: {
     type: String
   },
   diaChi: {
@@ -38,4 +31,4 @@ const userSchema = new mongoose.Schema({
 //   next()
 // })
 
-export const User = mongoose.model('User', userSchema, 'DocGia')
+export const Admin = mongoose.model('Admin', adminSchema, 'NhanVien')

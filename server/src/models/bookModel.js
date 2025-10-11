@@ -28,6 +28,9 @@ const bookSchema = new mongoose.Schema({
   },
   anhChiTiet: {
     type: [String]
+  },
+  theLoai: {
+    type: [String]
   }
 })
 

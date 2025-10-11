@@ -15,6 +15,16 @@ const route = useRoute()
 const book = reactive({})
 const userStore = useUserStore()
 
+const currentSlide = ref(1)
+
+const handleDescreaseSlide = () => {
+  currentSlide.value--
+}
+
+const handleInscreaseSlide = () => {
+  currentSlide.value++
+}
+
 const quantity = ref(1)
 
 onMounted(() => {
@@ -48,8 +58,8 @@ const imgs = computed(() => {
   <Navbar />
   <div style="height: calc(100vh - 68px);" class="bg-[#f5f5f5] pt-5">
     <div class="grid grid-cols-12 gap-x-4 gap-y-0 max-w-[1000px] mx-auto bg-white p-5 shadow-lg rounded-lg">
-      <div class="col-span-6 flex flex-col items-center">
-        <div class="carousel w-[220px] shadow-lg">
+      <div class="col-span-6 flex justify-center">
+        <div class="carousel carousel-center shadow-2xl rounded-box space-x-4 p-2 w-[220px]">
           <div v-for="(img, index) in imgs" :id="`slide${index+1}`" class="carousel-item relative w-[220px]">
             <img
               :src="API_ROOT + '/images/' + img"
@@ -66,11 +76,15 @@ const imgs = computed(() => {
           <legend class="fieldset-legend text-xs">Thông tin sách</legend>
           <div><span class="font-semibold">Mã sách:</span> {{ book.maSach }}</div>
           <div><span class="font-semibold">Tên sách:</span> {{ book.tenSach }}</div>
-          <div><span class="font-semibold">Đơn giá</span> {{ formatCurrency(book.donGia || 0) }}</div>
+          <div><span class="font-semibold">Đơn giá</span> <span class="font-semibold text-amber-600">{{ formatCurrency(book.donGia || 0) }}</span></div>
           <div><span class="font-semibold">Số lượng:</span> {{ book.soQuyen }}</div>
           <div><span class="font-semibold">Năm xuât bản:</span> {{ book.namXuatBan }}</div>
           <div><span class="font-semibold">Nhà xuất bản:</span> {{ book.nhaXuatBan?.tenNXB }}</div>
           <div><span class="font-semibold">Mô tả:</span> {{ book.moTa }}</div>
+          <div>
+            <span class="font-semibold">Thể loại: </span>
+            <span v-for="genre in book.theLoai" class="badge badge-info mr-1">{{ genre }}</span>
+          </div>
         </fieldset>
       </div>
       <!-- <div class="col-span-4">

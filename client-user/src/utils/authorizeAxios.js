@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
+import { interceptorLoadingElements } from './formatters'
 
 /**
  * Không thể import { store } from '~/redux/store' theo cách thông thường ở đây
@@ -20,6 +21,7 @@ authorizedAxiosInstance.defaults.withCredentials = true
 // Add a request interceptor: can thiệp vào những request API
 authorizedAxiosInstance.interceptors.request.use(
   (config) => {
+    interceptorLoadingElements(true)
     return config
   },
   (error) => {
@@ -30,9 +32,11 @@ authorizedAxiosInstance.interceptors.request.use(
 
 authorizedAxiosInstance.interceptors.response.use(
   (response) => {
+    interceptorLoadingElements(false)
     return response
   },
   (error) => {
+    interceptorLoadingElements(false)
     let errorMessage = error?.message
     if (error.response?.data?.message) {
       errorMessage = error.response.data.message

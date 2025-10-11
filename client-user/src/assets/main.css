@@ -12,7 +12,21 @@
   --color-text-primary: #213547;
 }
 
-.input,
+.auth-appear {
+  animation: appear 0.2s ease-in;
+}
+
+@keyframes appear {
+  from {
+    transform: scale(0.8);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* .input,
 .file-input,
 .select,
 .textarea {
@@ -25,4 +39,4 @@
   &:focus-within {
     border-color: transparent;
   }
-}
+} */

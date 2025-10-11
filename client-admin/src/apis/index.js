@@ -16,6 +16,22 @@ export const logoutAPI = async () => {
   return response.data
 }
 
+// Admins
+export const adminRegisterAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/admins/register`, data)
+  return response.data
+}
+
+export const adminLoginAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/admins/login`, data)
+  return response.data
+}
+
+export const adminLogoutAPI = async () => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/admins/logout`)
+  return response.data
+}
+
 // Books
 export const fetchBooksAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books`)

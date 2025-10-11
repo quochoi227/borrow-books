@@ -18,7 +18,7 @@ const registerInfo = reactive({
 
 const handleSubmit = (values) => {
   registerAPI(values).then(() => {
-    router.push('/login')
+    router.push(`/login?registeredPhone=${registerInfo.dienThoai}`)
   })
 }
 
@@ -62,14 +62,11 @@ const validatePasswordComfirmation = (value) => {
 }
 </script>
 <template>
-  <Form @submit="handleSubmit" class="rounded-lg bg-white p-6 grid grid-cols-12 mx-auto max-w-5xl z-10">
+  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-white p-6 grid grid-cols-12 gap-x-4 w-[700px] z-10">
     <div class="col-span-12">
       <h1 class="text-center text-2xl font-semibold mb-4">Đăng ký tài khoản</h1>
     </div>
-    <div class="col-span-4">
-      <img class="w-full h-full object-contain" :src="book" alt="Image">
-    </div>
-    <div class="col-span-4">
+    <div class="col-span-6">
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Họ lót</legend>
         <Field name="hoLot" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.hoLot" type="text" class="input" placeholder="Type here" />
@@ -87,7 +84,7 @@ const validatePasswordComfirmation = (value) => {
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Phái</legend>
-        <div>
+        <div class="mx-auto">
           <Field name="gioiTinh" v-model="registerInfo.gioiTinh" id="male" value="nam" type="radio" class="radio radio-primary" />
           <label for="male" class="text-[14px] ml-1">Nam</label>
           <Field name="gioiTinh" v-model="registerInfo.gioiTinh" id="female" value="nữ" type="radio" class="radio radio-primary ml-4" />
@@ -95,7 +92,7 @@ const validatePasswordComfirmation = (value) => {
         </div>
       </fieldset>
     </div>
-    <div class="col-span-4">
+    <div class="col-span-6">
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Địa chỉ</legend>
         <Field name="diaChi" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.diaChi" type="text" class="input" placeholder="Type here" />
@@ -122,7 +119,7 @@ const validatePasswordComfirmation = (value) => {
     </div>
     <div class="mt-2 col-span-12 text-center">
       <RouterLink to="/login">
-        <span class="text-sky-700">Đăng nhập</span>
+        <span class="text-sky-700 hover:text-sky-500 hover:underline">Đăng nhập</span>
       </RouterLink>
     </div>
   </Form>

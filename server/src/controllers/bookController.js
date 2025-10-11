@@ -6,7 +6,13 @@ export const bookController = {
   // ADD AN BOOK
   addBook: async (req, res) => {
     try {
-      const newBook = new Book(req.body)
+      const bookImgs = req.files.bookImgs.map((file) => file.filename)
+      const data = {
+        ...req.body,
+        anhBia: req.files.bookImg[0].filename,
+        anhChiTiet: bookImgs
+      }
+      const newBook = new Book(data)
       const createdBook = await newBook.save()
       // if (req.body.author) {
       //   const author = await Author.findById(req.body.author)
@@ -42,7 +48,14 @@ export const bookController = {
   // UPDATE A BOOK
   updateABook: async (req, res) => {
     try {
-      const updatedBook = await Book.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+      const bookImg = req.files?.bookImg?.[0] || null
+      const bookImgs = req.files?.bookImgs?.map((file) => file.filename) || []
+      const data = {
+        ...req.body,
+        anhBia: bookImg?.filename || req.body.bookImgOld,
+        anhChiTiet: req.body.bookImgsOld ? [...bookImgs, req.body.bookImgsOld] : bookImgs
+      }
+      const updatedBook = await Book.findByIdAndUpdate(req.params.id, { $set: data }, { new: true })
       res.status(200).json(updatedBook)
     } catch (error) {
       res.status(500).json(error)
