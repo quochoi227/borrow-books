@@ -1,5 +1,4 @@
 <script setup>
-import Navbar from '@/components/Navbar.vue'
 import { getBookDetailsAPI } from '@/apis'
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router'
@@ -10,28 +9,42 @@ import { API_ROOT } from '@/utils/constants'
 import { addNewRequestAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
 import { formatCurrency } from '../utils/formatters'
+import moment from 'moment'
+
+import 'vue3-carousel/carousel.css'
+import { Carousel, Slide, Navigation } from 'vue3-carousel'
+
+const currentSlide = ref(0)
+
+const slideTo = (nextSlide) => (currentSlide.value = nextSlide)
+
+const galleryConfig = {
+  itemsToShow: 1,
+  wrapAround: true,
+  slideEffect: 'fade',
+  mouseDrag: false,
+  touchDrag: false,
+  height: 320,
+}
+
+const thumbnailsConfig = {
+  height: 90,
+  itemsToShow: 5,
+  touchDrag: false,
+  gap: 10,
+}
 
 const route = useRoute()
 const book = reactive({})
 const userStore = useUserStore()
-
-const currentSlide = ref(1)
-
-const handleDescreaseSlide = () => {
-  currentSlide.value--
-}
-
-const handleInscreaseSlide = () => {
-  currentSlide.value++
-}
-
-const quantity = ref(1)
 
 onMounted(() => {
   getBookDetailsAPI(route.params.id).then((data) => {
     Object.assign(book, data)
   })
 })
+
+const expanded = ref(false)
 
 const dialog = createConfirmDialog(ModalDialog)
 
@@ -50,59 +63,206 @@ const confirmDelete = async () => {
   })
 }
 
-const imgs = computed(() => {
+const images = computed(() => {
   return Array.isArray(book.anhChiTiet) ? [book.anhBia, ...book.anhChiTiet] : [book.anhBia]
 })
+
+const inputValue = ref('')
+
+const handleSubmit = () => {
+  book.comments.push({
+    noiDung: inputValue.value,
+    hoTen: userStore.getFullName,
+    commentedAt: new Date(Date.now()).toISOString()
+  })
+}
 </script>
 <template>
-  <Navbar />
-  <div style="height: calc(100vh - 68px);" class="bg-[#f5f5f5] pt-5">
-    <div class="grid grid-cols-12 gap-x-4 gap-y-0 max-w-[1000px] mx-auto bg-white p-5 shadow-lg rounded-lg">
-      <div class="col-span-6 flex justify-center">
-        <div class="carousel carousel-center shadow-2xl rounded-box space-x-4 p-2 w-[220px]">
-          <div v-for="(img, index) in imgs" :id="`slide${index+1}`" class="carousel-item relative w-[220px]">
-            <img
-              :src="API_ROOT + '/images/' + img"
-              class="w-full h-[330px] object-contain" />
-            <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-              <a :href="`#slide${index > 0 ? index : imgs.length}`" class="btn btn-circle">❮</a>
-              <a :href="`#slide${index < imgs.length - 1 ? index + 2 : 1}`" class="btn btn-circle">❯</a>
-            </div>
+  <div style="height: calc(100vh - 68px); overflow-y: auto;" class="bg-[#f5f5f5] pt-4">
+    <div class="flex gap-4 max-w-[1200px] mx-auto rounded-lg">
+      <div class="w-5/12 flex flex-col gap-4">
+        <div class="flex flex-col items-center bg-white p-4 rounded-lg h-fit">
+          <div class="w-full">
+            <Carousel id="gallery" class="w-full" v-bind="galleryConfig" v-model="currentSlide">
+              <Slide v-for="(image, index) in images" :key="index">
+                <img :src="API_ROOT + '/images/' + image" alt="Gallery Image" class="rounded-lg w-full h-full object-contain" />
+              </Slide>
+            </Carousel>
+    
+            <Carousel id="thumbnails" class="w-full mt-4" v-bind="thumbnailsConfig" v-model="currentSlide">
+              <Slide v-for="(image, index) in images" :key="index">
+                <template #default="{ currentIndex, isActive }">
+                  <div
+                    :class="['w-full h-full object-contain opacity-60 cursor-pointer hover:opacity-100 transition-opacity duration-75', { 'opacity-100': isActive }]"
+                    @click="slideTo(currentIndex)"
+                  >
+                    <img :src="API_ROOT + '/images/' + image" alt="Thumbnail Image" class="w-full h-full object-contain" />
+                  </div>
+                </template>
+              </Slide>
+    
+              <template #addons>
+                <Navigation />
+              </template>
+            </Carousel>
+          </div>
+          <div class="flex justify-center w-full gap-3 mt-4">
+            <!-- <button class="btn btn-primary btn-outline flex-1">Thêm vào giỏ</button> -->
+            <button v-if="book.soQuyen" @click="confirmDelete" class="btn btn-primary w-56">Yêu cầu mượn</button>
+            <button v-else disabled class="btn w-56">Hết sách</button>
           </div>
         </div>
+        <!-- <div class="p-4 rounded-lg bg-white">
+          <h3 class="font-semibold text-lg">Đánh giá sản phẩm</h3>
+          <div class="rating">
+            <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="1 star" />
+            <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="2 star" />
+            <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="3 star" />
+            <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="4 star" />
+            <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="5 star" />
+          </div>
+        </div> -->
       </div>
-      <div class="col-span-6 text-[16px]">
-        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4 text-[16px]">
-          <legend class="fieldset-legend text-xs">Thông tin sách</legend>
-          <div><span class="font-semibold">Mã sách:</span> {{ book.maSach }}</div>
-          <div><span class="font-semibold">Tên sách:</span> {{ book.tenSach }}</div>
-          <div><span class="font-semibold">Đơn giá</span> <span class="font-semibold text-amber-600">{{ formatCurrency(book.donGia || 0) }}</span></div>
-          <div><span class="font-semibold">Số lượng:</span> {{ book.soQuyen }}</div>
-          <div><span class="font-semibold">Năm xuât bản:</span> {{ book.namXuatBan }}</div>
-          <div><span class="font-semibold">Nhà xuất bản:</span> {{ book.nhaXuatBan?.tenNXB }}</div>
-          <div><span class="font-semibold">Mô tả:</span> {{ book.moTa }}</div>
-          <div>
+      <div class="w-7/12 flex flex-col gap-4">
+        <div class="bg-white p-4 rounded-lg">
+          <h2 class="text-2xl">{{ book.tenSach }}</h2>
+          <div class="w-full mt-2">
+            <div class="w-[60%] inline-block text-sm">
+              <span class="pr-1">Nhà xuất bản:</span>
+              <span class="font-semibold">{{ book.nhaXuatBan?.tenNXB }}</span>
+            </div>
+            <div class="w-[40%] inline-block text-sm">
+              <span class="pr-1">Năm xuất bản:</span>
+              <span class="font-semibold">{{ book.namXuatBan }}</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-2">
             <span class="font-semibold">Thể loại: </span>
             <span v-for="genre in book.theLoai" class="badge badge-info mr-1">{{ genre }}</span>
           </div>
-        </fieldset>
-      </div>
-      <!-- <div class="col-span-4">
-        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4">
-          <legend class="fieldset-legend">Mượn sách</legend>
+        </div>
+        <div class="bg-white p-4 rounded-lg">
+          <h3 class="font-semibold text-lg">Thông tin chi tiết</h3>
+          <div class="overflow-x-auto mt-4">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th class="font-normal text-gray-600">Mã sách</th>
+                  <td>{{ book.maSach }}</td>
+                </tr>
+                <tr>
+                  <th class="font-normal text-gray-600">Tác giả</th>
+                  <td>Nam Cao</td>
+                </tr>
+                <tr>
+                  <th class="font-normal text-gray-600">NXB</th>
+                  <td>NXB {{ book.nhaXuatBan?.tenNXB }}</td>
+                </tr>
+                <tr>
+                  <th class="font-normal text-gray-600">Năm XB</th>
+                  <td>{{ book.namXuatBan }}</td>
+                </tr>
+                <tr>
+                  <th class="font-normal text-gray-600">Đơn giá</th>
+                  <td>{{ formatCurrency(book.donGia || 0) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-lg">
+          <h3 class="font-semibold text-lg">Mô tả</h3>
+          <p class="mt-4 text-sm">{{ book.moTa }}</p>
+          <div class="relative">
 
-          <label class="label">Số lượng</label>
-          <input type="number" v-model="quantity" min="0" max="3" class="input" placeholder="Số lượng sách muốn mượn" />
-        </fieldset>
+            <p class="text-sm" :class="[
+              'overflow-hidden',
+              expanded ? 'max-h-full' : 'max-h-[150px]'
+            ]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!</p>
+            <div
+              v-if="!expanded"
+              class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent pointer-events-none"
+            ></div>
+          </div>
+          <div class="w-full flex justify-center">
+            <button
+              class="text-blue-600 hover:underline cursor-pointer"
+              @click="expanded = !expanded"
+            >
+              {{ expanded ? 'Thu gọn' : 'Xem thêm' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gap-4 max-w-[1200px] mx-auto rounded-lg bg-white mt-4 p-4">
+      <h3 class="font-semibold text-lg">Thảo luận</h3>
+      <!-- <div class="flex mt-2 gap-4">
+        <div class="flex flex-col gap-1 items-center justify-center">
+          <span>
+            <span class="text-5xl">3.5</span>
+            <span class="text-2xl">/5</span>
+          </span>
+          <div class="rating rating-half">
+            <div class="mask mask-star-2 bg-orange-400 mask-half-1" aria-label="0.5 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-2" aria-label="1 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-1" aria-label="1.5 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-2" aria-label="2 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-1" aria-label="2.5 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-2" aria-label="3 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-1" aria-label="3.5 star" aria-current="true"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-2" aria-label="4 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-1" aria-label="4.5 star"></div>
+            <div class="mask mask-star-2 bg-orange-400 mask-half-2" aria-label="5 star"></div>
+          </div>
+          <span>2 đánh giá</span>
+        </div>
+        <div>
+          <div>
+            <span>5 sao</span>
+            <progress class="progress progress-warning w-56 ml-2" value="0" max="100"></progress>
+            <span class="ml-2">0%</span>
+          </div>
+          <div>
+            <span>4 sao</span>
+            <progress class="progress progress-warning w-56 ml-2" value="10" max="100"></progress>
+            <span class="ml-2">10%</span>
+          </div>
+          <div>
+            <span>3 sao</span>
+            <progress class="progress progress-warning w-56 ml-2" value="40" max="100"></progress>
+            <span class="ml-2">40%</span>
+          </div>
+          <div>
+            <span>2 sao</span>
+            <progress class="progress progress-warning w-56 ml-2" value="70" max="100"></progress>
+            <span class="ml-2">70%</span>
+          </div>
+          <div>
+            <span>1 sao</span>
+            <progress class="progress progress-warning w-56 ml-2" value="100" max="100"></progress>
+            <span class="ml-2">100%</span>
+          </div>
+        </div>
       </div> -->
-
-      <div class="col-span-12 flex justify-end gap-2">
-        <button v-if="book.soQuyen" @click="confirmDelete" class="btn btn-primary">Yêu cầu mượn</button>
-        <button v-else disabled class="btn">Hết sách</button>
-        <RouterLink to="/home">
-          <button class="btn btn-ghost">Về trang chủ</button>
-        </RouterLink>
+      <div class="mt-4 join w-[400px]">
+        <input v-model="inputValue" type="text" class="input join-item" placeholder="Nhập bình luận">
+        <button @click="handleSubmit" class="btn join-item btn-neutral">Enter</button>
       </div>
+      <div v-for="comment in book.comments" class="chat chat-start mt-2">
+        <div class="chat-header">
+          {{ comment.hoTen }}
+          <time class="text-xs opacity-50">{{ moment(comment.commentedAt).format('llll') }}</time>
+        </div>
+        <div class="chat-bubble">{{ comment.noiDung }}</div>
+      </div>
+      <!-- <div class="chat chat-start mt-2">
+        <div class="chat-header">
+          Obi-Wan Kenobi
+          <time class="text-xs opacity-50">2 hour ago</time>
+        </div>
+        <div class="chat-bubble">I loved you.</div>
+      </div> -->
     </div>
   </div>
 </template>

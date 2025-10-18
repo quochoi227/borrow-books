@@ -1,16 +1,40 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { uploadImageAPI, uploadImagesAPI, updateBookAPI } from '@/apis'
+import { reactive, ref, watch } from 'vue'
+import { updateBookAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
 import { API_ROOT, BOOK_GENRES } from '@/utils/constants'
-import { urlToFile } from '@/utils/formatters'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+
+// Crop image
+const cropperRef = ref(null);
+
+function change({ canvas }) {
+  if (canvas) {
+      // GỌI HÀM CẬP NHẬT: Không gửi đi ngay, chỉ cập nhật FormData
+    prepareForUpload(canvas); 
+  }
+}
+
+function prepareForUpload(canvas) {
+  canvas.toBlob((blob) => {
+    if (blob) {
+      // SỬ DỤNG SET() ĐỂ GHI ĐÈ:
+      // Nếu 'cover_image' đã tồn tại, nó sẽ bị ghi đè bằng 'blob' mới.
+      // uploadFormData.value.set(IMAGE_KEY, blob, 'cropped_cover.jpg');
+      bookData.anhBia = new File([blob], 'cropped_cover.jpg', { type: 'image/jpeg' });
+      
+      console.log(`FormData đã được cập nhật. Key bookImg chỉ có 1 giá trị.`);
+    }
+  }, 'image/jpeg', 0.9);
+}
 
 const props = defineProps(['currentActivebook', 'isActive', 'publishers'])
 const emit = defineEmits(['update:isActive', 'update-book'])
 const bookData = reactive(props.currentActivebook)
 const disableSubmit = ref(false)
 
-const bookImg = ref(bookData.anhBia)
+const bookImg = ref(API_ROOT + '/images/' + bookData.anhBia)
 const bookImgs = ref([...bookData.anhChiTiet])
 
 const handleUploadImage = (e) => {
@@ -71,6 +95,8 @@ const handleAdjust = async () => {
       } else {
         formData.append('bookImg', bookData.anhBia)
       }
+    } else if (key === 'theLoai') {
+      formData.append(key, JSON.stringify(bookData[key]))
     } else {
       formData.append(key, bookData[key])
     }
@@ -91,18 +117,25 @@ const handleSubmit = () => {
 }
 </script>
 <template>
-  <div class="p-5 mt-5 mx-4 bg-white rounded-2xl shadow-lg">
+  <div class="p-5 mt-5 mx-4">
     <form @submit.prevent="handleSubmit" class="space-y-2 grid grid-cols-12 gap-x-4 gap-y-0">
       <div class="col-span-4 row-span-3 flex flex-col items-center justify-center min-w-[300px]">
         <div>
-          <div v-if="bookImg" class="relative group w-[180px] h-[270px]">
+          <div v-if="bookImg" class="relative group">
             <div class="hidden group-hover:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white z-10">
               <button type="button" @click="deleteAnImage" class="btn btn-circle btn-ghost">
                 <font-awesome-icon icon="fa-solid fa-trash" />
               </button>
             </div>
-            <img v-if="bookImg.includes('5173')" :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="hello">
-            <img v-else :src="API_ROOT + '/images/' + bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="">
+            <cropper
+              ref="cropperRef"
+              class="w-[200px] h-[300px]"
+              :src="bookImg"
+              :stencil-props="{ aspectRatio: 2/3 }"
+              @change="change"
+            />
+            <!-- <img v-if="bookImg.includes('5173')" :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="hello">
+            <img v-else :src="API_ROOT + '/images/' + bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
           </div>
           <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-col items-center justify-center p-5">

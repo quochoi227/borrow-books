@@ -27,6 +27,11 @@ const streamUpload = (fileBuffer, folderName) => {
   })
 }
 
+const deleteImage = async (publicId) => {
+  await cloudinaryV2.uploader.destroy(publicId)
+}
+
 export const CloudinaryProvider = {
-  streamUpload
+  streamUpload,
+  deleteImage
 }

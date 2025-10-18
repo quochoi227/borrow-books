@@ -6,21 +6,16 @@ export const bookController = {
   // ADD AN BOOK
   addBook: async (req, res) => {
     try {
-      const bookImgs = req.files.bookImgs.map((file) => file.filename)
+      const bookImgs = req.files.bookImgs?.map((file) => file.filename) || []
+      const genres = JSON.parse(req.body.theLoai || '[]')
       const data = {
         ...req.body,
         anhBia: req.files.bookImg[0].filename,
-        anhChiTiet: bookImgs
+        anhChiTiet: bookImgs,
+        theLoai: genres
       }
       const newBook = new Book(data)
       const createdBook = await newBook.save()
-      // if (req.body.author) {
-      //   const author = await Author.findById(req.body.author)
-      //   if (!author) {
-      //     return res.status(404).json({ message: 'Author not found' });
-      //   }
-      //   await author.updateOne({ $push: { books: createdBook._id } })
-      // }
       res.status(201).json(createdBook)
     } catch (error) {
       res.status(500).json(error)
@@ -50,10 +45,12 @@ export const bookController = {
     try {
       const bookImg = req.files?.bookImg?.[0] || null
       const bookImgs = req.files?.bookImgs?.map((file) => file.filename) || []
+      const genres = JSON.parse(req.body.theLoai || '[]')
       const data = {
         ...req.body,
         anhBia: bookImg?.filename || req.body.bookImgOld,
-        anhChiTiet: req.body.bookImgsOld ? [...bookImgs, req.body.bookImgsOld] : bookImgs
+        anhChiTiet: req.body.bookImgsOld ? [...req.body.bookImgsOld, ...bookImgs] : bookImgs,
+        theLoai: genres
       }
       const updatedBook = await Book.findByIdAndUpdate(req.params.id, { $set: data }, { new: true })
       res.status(200).json(updatedBook)

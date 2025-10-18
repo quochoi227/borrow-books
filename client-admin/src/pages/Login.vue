@@ -51,7 +51,7 @@ onMounted(() => {
           <Field name="dienThoai" :validateOnInput="true" v-model="registerInfo.dienThoai" type="text" class="input w-full" placeholder="Type here" />
         </fieldset>
         <fieldset class="fieldset">
-          <legend class="fieldset-legend">Đặt mật khẩu</legend>
+          <legend class="fieldset-legend">Mật khẩu</legend>
           <Field name="matKhau" :validateOnInput="true" v-model="registerInfo.matKhau" type="password" class="input w-full" placeholder="Type here" />
         </fieldset>
       </div>

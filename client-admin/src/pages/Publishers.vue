@@ -109,7 +109,7 @@ const handleSubmit = () => {
       </form>
     </dialog>
     <!-- name of each tab group should be unique -->
-    <div class="m-2 mt-3 p-2 bg-white rounded shadow-md">
+    <div class="m-2 mt-3 p-2 bg-white">
       <div class="p-2 flex gap-2 relative">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tìm kiếm</legend>
@@ -124,9 +124,9 @@ const handleSubmit = () => {
         </button>
       </div>
       <div class="overflow-auto px-2 h-[460px]">
-        <table class="table overflow-hidden shadow-md bg-white">
+        <table class="table">
           <thead>
-            <tr class="bg-primary text-white">
+            <tr>
               <th>Mã NXB</th>
               <th>Tên</th>
               <th>Địa chỉ</th>

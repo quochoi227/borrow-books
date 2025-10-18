@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', {
     currentActiveUser: null
   }),
   getters: {
-    getUser: (state) => state.currentActiveUser
+    getFullName: (state) => state.currentActiveUser.hoLot + ' ' + state.currentActiveUser.ten
   },
   actions: {
     async loginUserAPI(data) {

@@ -34,27 +34,27 @@ export const adminController = {
       if (!bcryptjs.compareSync(req.body.matKhau, existAdmin.matKhau)) {
         throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Số điện thoại hoặc mật khẩu không đúng')
       }
-      // const adminInfo = {
-      //   _id: existAdmin._id,
-      //   maNhanVien: existAdmin.maNhanVien,
-      //   dienThoai: existAdmin.dienThoai
-      // }
-      // const accessToken = await JwtProvider.generateToken(adminInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
-      // const refreshToken = await JwtProvider.generateToken(adminInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)
+      const adminInfo = {
+        _id: existAdmin._id,
+        maNhanVien: existAdmin.maNhanVien,
+        dienThoai: existAdmin.dienThoai
+      }
+      const accessToken = await JwtProvider.generateToken(adminInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
+      const refreshToken = await JwtProvider.generateToken(adminInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)
 
-      // res.cookie('accessToken', accessToken, {
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'none',
-      //   maxAge: ms('14 days')
-      // })
+      res.cookie(env.ACCESS_TOKEN_ADMIN_NAME, accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: ms('14 days')
+      })
 
-      // res.cookie('refreshToken', refreshToken, {
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'none',
-      //   maxAge: ms('14 days')
-      // })
+      res.cookie(env.REFRESH_TOKEN_ADMIN_NAME, refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: ms('14 days')
+      })
 
       res.status(200).json(pickAdmin(existAdmin))
     } catch (error) {
@@ -63,8 +63,8 @@ export const adminController = {
   },
   logOut: async (req, res, next) => {
     try {
-      // res.clearCookie('accessToken')
-      // res.clearCookie('refreshToken')
+      res.clearCookie(env.ACCESS_TOKEN_ADMIN_NAME)
+      res.clearCookie(env.REFRESH_TOKEN_ADMIN_NAME)
       res.status(StatusCodes.OK).json({ loggedOut: true })
     } catch (error) {
       next(error)

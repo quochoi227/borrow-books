@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import Login from './Login.vue'
 import Register from './Register.vue'
 import { useUserStore } from '@/stores/userStore'
-import auth_bg from '@/assets/images/login-register-bg-resized.jpg'
+import auth_bg from '@/assets/images/login_register_bg.jpg'
 
 const route = useRoute()
 const router = useRouter()

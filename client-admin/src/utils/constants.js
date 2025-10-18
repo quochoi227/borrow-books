@@ -13,6 +13,17 @@ export const BOOK_GENRES = [
   'Truyện cổ tích',
   'Truyện tranh',
   'Sách công nghệ thông tin',
-  'Sách kỹ thuật'
+  'Sách kỹ thuật',
+  'Sách dạy nấu ăn'
 ]
 
+export const PROTECTED_ROUTES = ['quan-ly-sach', 'quan-ly-muon-sach', 'dashboard', 'nha-xuat-ban']
+
+export const REQUEST_STATUS = {
+  PENDING: 'chờ duyệt',
+  ACCEPT: 'đang mượn',
+  REJECTED: 'đã từ chối',
+  RETURNED: 'đã trả',
+  LATE: 'quá hạn',
+  LOSTED: 'bị mất'
+}

@@ -9,15 +9,19 @@ const sidebarItemClassess = computed(() => {
   return `text-[16px] gap-3 text-gray-500 flex ${isOpen.value ? 'justify-start' : 'justify-center'}`
 })
 // const activeItemClasses = 'menu-active'
-const activeItemClasses = 'bg-primary text-white'
+const activeItemClasses = 'menu-active'
 const isOpen = ref(true)
 </script>
 <template>
   <div :style="{ width: isOpen ? '270px' : '80px', minWidth: isOpen ? '270px' : '80px' }" class="bg-white transition-all duration-300 flex flex-col select-none">
-    <div class="py-2 px-4 max-h-[70px] overflow-hidden flex items-center justify-center gap-3">
-      <img width="44px" :src="book_icon" alt="Logo">
+    <div class="py-2 px-4 max-h-[70px] overflow-hidden flex items-center justify-center">
       <div v-if="isOpen">
-        <h1 class="text-lg font-bold text-primary">BORROWEE</h1>
+        <button class="btn text-2xl font-[K2D] font-bold text-primary">BORROWEE</button>
+        <!-- <p>Mượn sách dễ dàng</p> -->
+      </div>
+      <!-- <img width="44px" :src="book_icon" alt="Logo"> -->
+      <div v-else="isOpen">
+        <button class="btn text-2xl font-[K2D] font-bold text-primary">B</button>
         <!-- <p>Mượn sách dễ dàng</p> -->
       </div>
     </div>

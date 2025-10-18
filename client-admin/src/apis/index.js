@@ -1,6 +1,11 @@
 import authorizedAxiosInstance from '../utils/authorizeAxios'
 import { API_ROOT } from '@/utils/constants'
 // Users
+export const fetchAllUsersAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/users`)
+  return response.data
+}
+
 export const registerAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)
   return response.data

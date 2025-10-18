@@ -1,6 +1,6 @@
 <script setup>
-import { ref, reactive, onMounted, watch, computed } from 'vue'
-import { addNewBookAPI, fetchBooksAPI, deleteBookAPI, fetchPublishersAPI } from '@/apis'
+import { ref, reactive, onMounted, watch, computed, onUnmounted } from 'vue'
+import { addNewBookAPI, deleteBookAPI, fetchPublishersAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
@@ -10,6 +10,9 @@ import { API_ROOT } from '@/utils/constants'
 import { formatCurrency } from '@/utils/formatters'
 import AddBookModal from '@/components/AddBookModal.vue'
 import { useDebounceFn } from '@/composables/useDebounceFn'
+import { useBookStore } from '@/stores/bookStore'
+
+const bookStore = useBookStore()
 
 const handleInput = (value) => {
   searchValue.value = value
@@ -50,22 +53,29 @@ const handleDecrease = () => {
 }
 
 watch(() => books.value.length, (newVal) => {
-  bookData.maSach = 'B' + String(newVal + 1).padStart(4, '0')
   pageSum.value = Math.ceil(newVal / rowsPerPage.value)
   if (newVal % rowsPerPage.value === 0 && currentPage.value > 1 && currentPage.value === pageSum.value + 1) {
     currentPage.value--
   }
 })
 
+watch(
+  () => bookStore.books,
+  (newBooks) => {
+    books.value = newBooks
+    pageSum.value = Math.ceil(newBooks.length / rowsPerPage.value)
+  },
+  { immediate: true }
+)
+
 onMounted(() => {
-  fetchBooksAPI(searchValue.value).then((data) => {
-    bookData.maSach = 'B' + String(data.length + 1).padStart(4, '0')
-    books.value = data
-    pageSum.value = Math.ceil(data.length / rowsPerPage.value)// booksAfter.value = data.slice((currentPage.value - 1) * rowsPerPage.value, (currentPage.value - 1) * rowsPerPage.value + rowsPerPage.value)
-  })
   fetchPublishersAPI().then((data) => {
     publishers.value = data
   })
+})
+
+onUnmounted(() => {
+  bookStore.setBooks(books.value)
 })
 
 const remainingCheck = (num) => {
@@ -90,6 +100,7 @@ const bookData = reactive({
   tenSach: '',
   donGia: '',
   soQuyen: '',
+  soQuyenConLai: '',
   namXuatBan: '',
   maNXB: '',
   moTa: '',
@@ -103,21 +114,28 @@ const newPublisher = ref(null)
 const handleSubmit = (bookData) => {
   const formData = new FormData()
   Object.keys(bookData).forEach((key) => {
-    console.log(key, bookData[key])
     if (key === 'anhChiTiet' && bookData.anhChiTiet) {
       for (let i = 0; i < bookData.anhChiTiet.length; i++) {
         formData.append('bookImgs', bookData.anhChiTiet[i])
       }
     } else if (key === 'anhBia') {
       formData.append('bookImg', bookData.anhBia)
+    } else if (key === 'theLoai') {
+      formData.append('theLoai', JSON.stringify(bookData[key]))
+    } else if (key === 'soQuyenConLai') {
+      formData.append('soQuyenConLai', bookData.soQuyen)
     } else {
       formData.append(key, bookData[key])
     }
   })
-  console.log(formData)
   addNewBookAPI(formData).then((data) => {
     newPublisher.value = publishers.value.find((publisher) => publisher.maNXB === data.maNXB)
-    books.value.push(data)
+    books.value.push({
+      ...data,
+      nhaXuatBan: {
+        ...newPublisher.value
+      }
+    })
     if (currentPage.value === pageSum.value && booksAfter.length < rowsPerPage.value) {
       booksAfter.push(data)
     }
@@ -193,7 +211,7 @@ const confirmDelete = async (maSach) => {
       </form>
     </dialog>
     <!-- name of each tab group should be unique -->
-    <div class="m-2 mt-3 p-2 bg-white shadow-md rounded">
+    <div>
       <div class="flex gap-2 p-2 rounded-lg relative">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tìm kiếm</legend>
@@ -216,21 +234,22 @@ const confirmDelete = async (maSach) => {
             <option value="out-of-stock">Đã mượn hết</option>
           </select>
         </fieldset>
-        <button @click="modal.showModal()" class="btn btn-primary text-white absolute right-2 bottom-2">
+        <button @click="modal.showModal()" class="btn btn-primary absolute right-2 bottom-2">
           <font-awesome-icon icon="fa-solid fa-plus" />
           Thêm sách
         </button>
       </div>
-      <div class="overflow-auto px-2 h-[460px]">
-        <table class="table bg-white overflow-hidden shadow-md">
+      <div class="overflow-x-auto px-2">
+        <table class="table">
           <thead>
-            <tr class="bg-primary text-white">
+            <tr>
               <th>Mã sách</th>
               <th>Ảnh bìa</th>
               <th>Tên sách</th>
               <th>Mô tả</th>
               <th>Đơn giá</th>
               <th>Số quyển</th>
+              <th>Còn lại</th>
               <th>Nhà xuất bản</th>
               <th>Hành động</th>
             </tr>
@@ -239,11 +258,9 @@ const confirmDelete = async (maSach) => {
             <tr v-for="(book) in booksAfter" class="hover:bg-base-300">
               <td class="py-1">{{ book.maSach }}</td>
               <td class="max-w-[230px] flex items-center gap-4 py-1">
-                <div class="avatar">
-                  <div class="w-16 rounded">
+                  <div class="w-12 h-18 rounded overflow-hidden">
                     <img class="w-full h-full object-cover" :src="API_ROOT + '/images/' + book.anhBia" alt="Book image">
                   </div>
-                </div>
               </td>
               <td class="py-1 max-w-[200px]">
                 <div
@@ -279,7 +296,10 @@ const confirmDelete = async (maSach) => {
               <td class="py-1">
                 <div :class="['badge', book.soQuyen ? 'badge-warning' : 'badge-error' ]">{{ book.soQuyen }}</div>
               </td>
-              <td class="py-1">{{ book.nhaXuatBan?.tenNXB || newPublisher.tenNXB }}</td>
+              <td class="py-1">
+                <div :class="['badge', book.soQuyen ? 'badge-warning' : 'badge-error' ]">{{ book.soQuyenConLai }}</div>
+              </td>
+              <td class="py-1">{{ book.nhaXuatBan?.tenNXB || newPublisher?.tenNXB }}</td>
               <td class="py-1 space-x-1">
                 <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-circle">
                   <font-awesome-icon icon="fa-solid fa-trash" />

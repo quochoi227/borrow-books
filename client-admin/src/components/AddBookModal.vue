@@ -1,8 +1,31 @@
 <script setup>
-import { uploadImageAPI, uploadImagesAPI } from '@/apis'
-import { API_ROOT } from '@/utils/constants'
 import { BOOK_GENRES } from '@/utils/constants'
-import { reactive, watch, ref } from 'vue';
+import { reactive, watch, ref } from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+
+// Crop image
+const cropperRef = ref(null);
+
+function change({ canvas }) {
+  if (canvas) {
+      // GỌI HÀM CẬP NHẬT: Không gửi đi ngay, chỉ cập nhật FormData
+    prepareForUpload(canvas); 
+  }
+}
+
+function prepareForUpload(canvas) {
+  canvas.toBlob((blob) => {
+    if (blob) {
+      // SỬ DỤNG SET() ĐỂ GHI ĐÈ:
+      // Nếu 'cover_image' đã tồn tại, nó sẽ bị ghi đè bằng 'blob' mới.
+      // uploadFormData.value.set(IMAGE_KEY, blob, 'cropped_cover.jpg');
+      bookData.anhBia = new File([blob], 'cropped_cover.jpg', { type: 'image/jpeg' });
+      
+      console.log(`FormData đã được cập nhật. Key bookImg chỉ có 1 giá trị.`);
+    }
+  }, 'image/jpeg', 0.9);
+}
 
 const props = defineProps(['bookData', 'publishers'])
 const emit = defineEmits(['submit', 'closeModal'])
@@ -20,7 +43,7 @@ const bookImgs = ref([])
 
 const handleUploadImage = (e) => {
   bookImg.value = URL.createObjectURL(e.target?.files[0])
-  bookData.anhBia = e.target?.files[0]
+  // bookData.anhBia = e.target?.files[0]
 }
 
 const handleUploadImages = (e) => {
@@ -51,19 +74,34 @@ const deleteOneInImages = (img, index) => {
   }
 }
 
+const closeModal = () => {
+  emit('closeModal')
+  URL.revokeObjectURL(bookImg.value)
+  bookImgs.value.forEach((img) => URL.revokeObjectURL(img))
+  bookImg.value = ''
+  bookImgs.value = []
+}
+
 </script>
 <template>
   <div class="modal-box w-fit max-w-full">
     <form @submit.prevent="emit('submit', bookData)" class="space-y-2 grid grid-cols-12 gap-x-4 gap-y-0">
       <div class="col-span-4 row-span-3 flex flex-col items-center justify-center min-w-[300px]">
         <div>
-          <div v-if="bookImg" class="relative group w-[180px] h-[270px]">
+          <div v-if="bookImg" class="relative group">
             <div class="hidden group-hover:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white z-10">
               <button type="button" @click="deleteAnImage" class="btn btn-circle btn-ghost">
                 <font-awesome-icon icon="fa-solid fa-trash" />
               </button>
             </div>
-            <img :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="">
+            <cropper
+              ref="cropperRef"
+              class="w-[240px] h-[360px]"
+              :src="bookImg"
+              :stencil-props="{ aspectRatio: 2/3 }"
+              @change="change"
+            />
+            <!-- <img :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
           </div>
           <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-col items-center justify-center p-5">
@@ -144,7 +182,7 @@ const deleteOneInImages = (img, index) => {
       </div>
       <div class="col-span-12 flex justify-end">
         <button type="submit" :class="['btn', disableSubmit ? 'btn-disabled' : 'btn-primary']">Thêm</button>
-        <button @click="emit('closeModal')" type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Hủy</button>
+        <button @click="closeModal" type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Hủy</button>
       </div>
     </form>
   </div>

@@ -4,7 +4,7 @@ import pkg from 'lodash'
 const { pick } = pkg
 
 export const pickUser = (user) => {
-  if (user) return {}
+  if (!user) return {}
   return pick(user, ['_id', 'hoLot', 'ten', 'ngaySinh', 'diaChi', 'dienThoai', 'maDocGia'])
 }
 
