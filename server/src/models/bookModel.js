@@ -6,6 +6,7 @@ const bookSchema = new mongoose.Schema({
     unique: true
   },
   tenSach: String,
+  tacGia: String,
   donGia: Number,
   soQuyen: Number,
   soQuyenConLai: Number,

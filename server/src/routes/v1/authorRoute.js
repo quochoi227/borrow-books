@@ -4,18 +4,14 @@ import { authorController } from '../../controllers/authorController.js'
 const Router = express.Router()
 
 // ADD AUTHOR
-Router.post('/', authorController.addAuthor)
-
-// GET AUTHOR
-Router.get('/', authorController.getAllAuthors)
+Router.route('/')
+  .post(authorController.addAuthor)
+  .get(authorController.getAllAuthors)
 
 // GET AN AUTHOR IN DETAIL
-Router.get('/:id', authorController.getAnAuthor)
-
-// UPDATE AN AUTHOR
-Router.put('/:id', authorController.updateAnAuthor)
-
-// DELETE AN AUTHOR
-Router.delete('/:id', authorController.deleteAnAuthor)
+Router.route('/:id')
+  .get(authorController.getAnAuthor)
+  .put(authorController.updateAnAuthor)
+  .delete(authorController.deleteAnAuthor)
 
 export const authorRoute = Router

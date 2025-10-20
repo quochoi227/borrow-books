@@ -12,7 +12,7 @@ export const useBookStore = defineStore('book', {
     async fetchBooks() {
       try {
         const data = await fetchBooksAPI()
-        this.books = this.books.concat(data)
+        this.books = [...data] 
         return data
       } catch (error) {
         throw error
@@ -20,6 +20,12 @@ export const useBookStore = defineStore('book', {
     },
     setBooks(data) {
       this.books = data
+    },
+    setBook(data) {
+      const targetBook = this.books.find((b) => b._id === data._id)
+      if (targetBook) {
+        Object.assign(targetBook, data)
+      }
     },
     decrementBookCopyCount(bookId) {
       const book = this.books.find((b) => b.maSach === bookId)

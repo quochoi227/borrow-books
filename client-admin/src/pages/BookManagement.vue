@@ -5,7 +5,6 @@ import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
 import { cloneDeep } from 'lodash'
-import BookDetails from './BookDetails.vue'
 import { API_ROOT } from '@/utils/constants'
 import { formatCurrency } from '@/utils/formatters'
 import AddBookModal from '@/components/AddBookModal.vue'
@@ -28,7 +27,6 @@ const modal = ref(null)
 
 const books = ref([])
 const publishers = ref([])
-const isActive = ref(false)
 
 const rowsPerPage = ref(5)
 const currentPage = ref(1)
@@ -98,6 +96,7 @@ const booksAfter = computed(() => {
 const bookData = reactive({
   maSach: '',
   tenSach: '',
+  tacGia: '',
   donGia: '',
   soQuyen: '',
   soQuyenConLai: '',
@@ -153,13 +152,6 @@ const closeModal = () => {
   modal.value.close()
 }
 
-const currentActiveBook = ref()
-
-const handleActiveBook = (book) => {
-  currentActiveBook.value = cloneDeep(book)
-  isActive.value = true
-}
-
 const handleDeleteBook = (maSach) => {
   deleteBookAPI(maSach).then(() => {
     toast.success("Xóa sách thành công", {
@@ -172,13 +164,13 @@ const handleDeleteBook = (maSach) => {
   })
 }
 
-const handleUpdateBook = (book, newPublisher) => {
-  const targetBook = books.value.find((b) => b._id === book._id)
-  for (let key in book) {
-    targetBook[key] = book[key]
-  }
-  targetBook.nhaXuatBan = newPublisher
-}
+// const handleUpdateBook = (book, newPublisher) => {
+//   const targetBook = books.value.find((b) => b._id === book._id)
+//   for (let key in book) {
+//     targetBook[key] = book[key]
+//   }
+//   targetBook.nhaXuatBan = newPublisher
+// }
 
 const dialog = createConfirmDialog(ModalDialog)
 
@@ -191,14 +183,7 @@ const confirmDelete = async (maSach) => {
 </script>
 
 <template>
-  <BookDetails
-    v-if="isActive"
-    @update-book="handleUpdateBook"
-    v-model:isActive="isActive"
-    :currentActivebook="currentActiveBook"
-    :publishers="publishers"
-  />
-  <div v-else class="w-full h-full relative">
+  <div class="w-full h-full relative">
     <dialog ref="modal" class="modal z-0">
       <AddBookModal
         @submit="handleSubmit"
@@ -304,9 +289,11 @@ const confirmDelete = async (maSach) => {
                 <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-circle">
                   <font-awesome-icon icon="fa-solid fa-trash" />
                 </button>
-                <button @click="handleActiveBook(book)" class="btn btn-sm btn-info btn-circle">
-                  <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                </button>
+                <RouterLink :to="'/books/' + book._id">
+                  <button class="btn btn-sm btn-info btn-circle">
+                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  </button>
+                </RouterLink>
               </td>
             </tr>
           </tbody>

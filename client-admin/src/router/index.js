@@ -1,11 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import MainLayout from '@/layouts/MainLayout.vue'
+import NoSidebar from '@/layouts/NoSidebar.vue'
 import BookManagement from '@/pages/BookManagement.vue'
-import Requests from '@/pages/Requests.vue'
-import Dashboard from '@/pages/Dashboard.vue'
-import Sources from '@/pages/Publishers.vue'
-import NotFound from '@/pages/NotFound.vue'
-import Auth from '@/pages/Auth.vue'
 import { useAdminStore } from '@/stores/adminStore'
 import { PROTECTED_ROUTES } from '@/utils/constants'
 
@@ -23,7 +19,7 @@ const router = createRouter({
         {
           path: 'dashboard',
           name: 'dashboard',
-          component: Dashboard
+          component: () => import('@/pages/Dashboard.vue')
         },
         {
           path: 'quan-ly-sach',
@@ -33,30 +29,41 @@ const router = createRouter({
         {
           path: 'quan-ly-muon-sach',
           name: 'quan-ly-muon-sach',
-          component: Requests
+          component: () => import('@/pages/Requests.vue')
         },
         {
           path: 'nha-xuat-ban',
           name: 'nha-xuat-ban',
-          component: Sources
+          component: () => import('@/pages/Publishers.vue')
+        }
+      ]
+    },
+    {
+      path: '/books',
+      component: NoSidebar,
+      children: [
+        {
+          path: ':id',
+          name: 'book-details',
+          component: () => import('@/pages/BookDetails.vue')
         }
       ]
     },
     {
       path: '/register',
       name: 'register',
-      component: Auth
+      component: () => import('@/pages/Auth.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: Auth
+      component: () => import('@/pages/Auth.vue')
     },
     // Not found
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
-      component: NotFound
+      component: () => import('@/pages/NotFound.vue')
     }
   ]
 })

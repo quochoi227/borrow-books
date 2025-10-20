@@ -1,6 +1,8 @@
 <script setup>
-import { BOOK_GENRES } from '@/utils/constants'
-import { reactive, watch, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { updateBookAPI } from '@/apis'
+import { toast } from 'vue3-toastify'
+import { API_ROOT, BOOK_GENRES } from '@/utils/constants'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 
@@ -27,23 +29,17 @@ function prepareForUpload(canvas) {
   }, 'image/jpeg', 0.9);
 }
 
-const props = defineProps(['bookData', 'publishers'])
-const emit = defineEmits(['submit', 'closeModal'])
-const bookData = reactive(props.bookData)
+const props = defineProps(['currentActivebook', 'isActive', 'publishers'])
+const emit = defineEmits(['update:isActive', 'update-book'])
+const bookData = reactive(props.currentActivebook)
 const disableSubmit = ref(false)
 
-watch(() => props.bookData, (newVal) => {
-  for (let key in newVal) {
-    bookData[key] = newVal[key]
-  }
-})
-
-const bookImg = ref(null)
-const bookImgs = ref([])
+const bookImg = ref(API_ROOT + '/images/' + bookData.anhBia)
+const bookImgs = ref([...bookData.anhChiTiet])
 
 const handleUploadImage = (e) => {
   bookImg.value = URL.createObjectURL(e.target?.files[0])
-  // bookData.anhBia = e.target?.files[0]
+  bookData.anhBia = e.target?.files[0]
 }
 
 const handleUploadImages = (e) => {
@@ -57,16 +53,24 @@ const handleUploadImages = (e) => {
 }
 
 const deleteAnImage = () => {
-  if (bookImg.value) {
+  if (bookImg.value && bookImg.value.includes('5173')) {
     URL.revokeObjectURL(bookImg.value)
-    bookImg.value = ''
+    bookImg.value = null
+    bookData.anhBia = null
+  } else if (bookImg.value) {
+    bookImg.value = null
     bookData.anhBia = null
   }
 }
 
 const deleteOneInImages = (img, index) => {
-  if (img) {
+  if (img && img.includes('5173')) {
     URL.revokeObjectURL(img)
+    bookImgs.value = bookImgs.value.filter((i) => i !== img)
+    const filesArray = Array.from(bookData.anhChiTiet)
+    filesArray.splice(index, 1)
+    bookData.anhChiTiet = filesArray
+  } else if (img) {
     bookImgs.value = bookImgs.value.filter((i) => i !== img)
     const filesArray = Array.from(bookData.anhChiTiet)
     filesArray.splice(index, 1)
@@ -74,18 +78,47 @@ const deleteOneInImages = (img, index) => {
   }
 }
 
-const closeModal = () => {
-  emit('closeModal')
-  URL.revokeObjectURL(bookImg.value)
-  bookImgs.value.forEach((img) => URL.revokeObjectURL(img))
-  bookImg.value = ''
-  bookImgs.value = []
+const handleAdjust = async () => {
+  const formData = new FormData()
+  Object.keys(bookData).forEach((key) => {
+    if (key === 'anhChiTiet' && bookData.anhChiTiet) {
+      for (let i = 0; i < bookData.anhChiTiet.length; i++) {
+        if (typeof bookData.anhChiTiet[i] === 'string') {
+          formData.append('bookImgsOld', bookData.anhChiTiet[i])
+        } else {
+          formData.append('bookImgs', bookData.anhChiTiet[i])
+        }
+      }
+    } else if (key === 'anhBia') {
+      if (typeof bookData.anhBia === 'string') {
+        formData.append('bookImgOld', bookData.anhBia)
+      } else {
+        formData.append('bookImg', bookData.anhBia)
+      }
+    } else if (key === 'theLoai') {
+      formData.append(key, JSON.stringify(bookData[key]))
+    } else {
+      formData.append(key, bookData[key])
+    }
+  })
+  updateBookAPI(bookData._id, formData).then((book) => {
+    toast.success("Cập nhật sách thành công", {
+      autoClose: 3000,
+      position: toast.POSITION.BOTTOM_LEFT,
+    })
+    const newPublisher = props.publishers.find((p) => p.maNXB === bookData.maNXB)
+    emit('update:isActive', false)
+    emit('update-book', book, newPublisher)
+  })
 }
 
+const handleSubmit = () => {
+  handleAdjust()
+}
 </script>
 <template>
-  <div class="modal-box w-fit max-w-full">
-    <form @submit.prevent="emit('submit', bookData)" class="space-y-2 grid grid-cols-12 gap-x-4 gap-y-0">
+  <div class="p-5 mt-5 mx-4">
+    <form @submit.prevent="handleSubmit" class="space-y-2 grid grid-cols-12 gap-x-4 gap-y-0">
       <div class="col-span-4 row-span-3 flex flex-col items-center justify-center min-w-[300px]">
         <div>
           <div v-if="bookImg" class="relative group">
@@ -96,12 +129,13 @@ const closeModal = () => {
             </div>
             <cropper
               ref="cropperRef"
-              class="w-[240px] h-[360px]"
+              class="w-[200px] h-[300px]"
               :src="bookImg"
               :stencil-props="{ aspectRatio: 2/3 }"
               @change="change"
             />
-            <!-- <img :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
+            <!-- <img v-if="bookImg.includes('5173')" :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="hello">
+            <img v-else :src="API_ROOT + '/images/' + bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
           </div>
           <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-col items-center justify-center p-5">
@@ -126,7 +160,8 @@ const closeModal = () => {
               </button>
             </div>
             <div class="w-24 h-24 rounded border-2 border-base-300 overflow-hidden">
-              <img :src="img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
+              <img v-if="img.includes('5173')" :src="img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
+              <img v-else :src="API_ROOT + '/images/' + img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
             </div>
           </div>
         </div>
@@ -144,10 +179,6 @@ const closeModal = () => {
           <legend class="fieldset-legend">Đơn giá</legend>
           <input required v-model="bookData.donGia" type="number" class="input" placeholder="45000" />
         </fieldset>
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">Tác giả</legend>
-          <input required v-model="bookData.tacGia" type="text" class="input" placeholder="45000" />
-        </fieldset>
       </div>
       <div class="col-span-4">
         <fieldset class="fieldset">
@@ -160,7 +191,6 @@ const closeModal = () => {
         </fieldset>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Nhà xuất bản</legend>
-          <!-- <input v-model="bookData.maNXB" type="text" class="input" placeholder="NXB001" /> -->
           <select required v-model="bookData.maNXB" class="select">
             <option value="" disabled selected>Chọn nhà xuất bản</option>
             <option v-for="publisher in publishers" :value="publisher.maNXB">{{ publisher.tenNXB }}</option>
@@ -185,8 +215,8 @@ const closeModal = () => {
         </fieldset>
       </div>
       <div class="col-span-12 flex justify-end">
-        <button type="submit" :class="['btn', disableSubmit ? 'btn-disabled' : 'btn-primary']">Thêm</button>
-        <button @click="closeModal" type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Hủy</button>
+        <button type="submit" :class="['btn', disableSubmit ? 'btn-disabled' : 'btn-primary']">Cập nhật</button>
+        <button @click="emit('update:isActive', false)" type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Thoát</button>
       </div>
     </form>
   </div>

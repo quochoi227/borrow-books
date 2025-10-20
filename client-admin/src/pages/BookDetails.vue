@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, ref, watch } from 'vue'
-import { updateBookAPI } from '@/apis'
+import { onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { updateBookAPI, getBookDetailsAPI, fetchPublishersAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
 import { API_ROOT, BOOK_GENRES } from '@/utils/constants'
+import { useBookStore } from '@/stores/bookStore'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 
@@ -29,13 +31,27 @@ function prepareForUpload(canvas) {
   }, 'image/jpeg', 0.9);
 }
 
-const props = defineProps(['currentActivebook', 'isActive', 'publishers'])
-const emit = defineEmits(['update:isActive', 'update-book'])
-const bookData = reactive(props.currentActivebook)
+const bookStore = useBookStore()
+onMounted(() => {
+  getBookDetailsAPI(route.params.id).then((data) => {
+    Object.assign(bookData, data)
+    bookImg.value = data.anhBia
+    bookImgs.value = [...data.anhChiTiet]
+  })
+  // Fetch publishers
+  fetchPublishersAPI().then((data) => {
+    publishers.value = data
+  })
+})
+
+const route = useRoute()
+
+const bookData = reactive({})
+const publishers = ref([])
 const disableSubmit = ref(false)
 
-const bookImg = ref(API_ROOT + '/images/' + bookData.anhBia)
-const bookImgs = ref([...bookData.anhChiTiet])
+const bookImg = ref('')
+const bookImgs = ref([])
 
 const handleUploadImage = (e) => {
   bookImg.value = URL.createObjectURL(e.target?.files[0])
@@ -55,12 +71,9 @@ const handleUploadImages = (e) => {
 const deleteAnImage = () => {
   if (bookImg.value && bookImg.value.includes('5173')) {
     URL.revokeObjectURL(bookImg.value)
-    bookImg.value = null
-    bookData.anhBia = null
-  } else if (bookImg.value) {
-    bookImg.value = null
-    bookData.anhBia = null
   }
+  bookImg.value = null
+  bookData.anhBia = null
 }
 
 const deleteOneInImages = (img, index) => {
@@ -78,7 +91,7 @@ const deleteOneInImages = (img, index) => {
   }
 }
 
-const handleAdjust = async () => {
+const handleSubmit = async () => {
   const formData = new FormData()
   Object.keys(bookData).forEach((key) => {
     if (key === 'anhChiTiet' && bookData.anhChiTiet) {
@@ -106,36 +119,42 @@ const handleAdjust = async () => {
       autoClose: 3000,
       position: toast.POSITION.BOTTOM_LEFT,
     })
-    const newPublisher = props.publishers.find((p) => p.maNXB === bookData.maNXB)
-    emit('update:isActive', false)
-    emit('update-book', book, newPublisher)
+    bookStore.setBook(book)
   })
 }
 
-const handleSubmit = () => {
-  handleAdjust()
-}
+const cropMode = ref(false);
+
 </script>
 <template>
-  <div class="p-5 mt-5 mx-4">
+  <div class="p-2">
     <form @submit.prevent="handleSubmit" class="space-y-2 grid grid-cols-12 gap-x-4 gap-y-0">
       <div class="col-span-4 row-span-3 flex flex-col items-center justify-center min-w-[300px]">
         <div>
-          <div v-if="bookImg" class="relative group">
+          <div class="w-full mb-2 flex items-center justify-center">
+            <label class="label">
+              <input v-model="cropMode" type="checkbox" class="checkbox" />
+              Crop ảnh bìa
+            </label>
+          </div>
+          <div v-if="bookImg" class="relative group overflow-hidden rounded-lg">
             <div class="hidden group-hover:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white z-10">
               <button type="button" @click="deleteAnImage" class="btn btn-circle btn-ghost">
                 <font-awesome-icon icon="fa-solid fa-trash" />
               </button>
             </div>
             <cropper
+              v-if="cropMode"
               ref="cropperRef"
               class="w-[200px] h-[300px]"
-              :src="bookImg"
+              :src="API_ROOT + '/images/' + bookImg"
               :stencil-props="{ aspectRatio: 2/3 }"
               @change="change"
             />
-            <!-- <img v-if="bookImg.includes('5173')" :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt="hello">
-            <img v-else :src="API_ROOT + '/images/' + bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
+            <div v-else>
+              <img v-if="bookImg.includes('5173')" :src="bookImg" class="object-contain group-hover:brightness-50 cursor-pointer rounded-lg w-[200px]" alt="hello">
+              <img v-else :src="API_ROOT + '/images/' + bookImg" class="object-contain group-hover:brightness-50 cursor-pointer rounded-lg w-[200px]" alt="">
+            </div>
           </div>
           <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             <div class="flex flex-col items-center justify-center p-5">
@@ -179,6 +198,10 @@ const handleSubmit = () => {
           <legend class="fieldset-legend">Đơn giá</legend>
           <input required v-model="bookData.donGia" type="number" class="input" placeholder="45000" />
         </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Tác giả</legend>
+          <input required v-model="bookData.tacGia" type="text" class="input" placeholder="45000" />
+        </fieldset>
       </div>
       <div class="col-span-4">
         <fieldset class="fieldset">
@@ -216,7 +239,9 @@ const handleSubmit = () => {
       </div>
       <div class="col-span-12 flex justify-end">
         <button type="submit" :class="['btn', disableSubmit ? 'btn-disabled' : 'btn-primary']">Cập nhật</button>
-        <button @click="emit('update:isActive', false)" type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Thoát</button>
+        <RouterLink to="/quan-ly-sach">
+          <button type="reset" :class="['btn ml-1', disableSubmit ? 'btn-disabled' : 'btn-ghost']">Thoát</button>
+        </RouterLink>
       </div>
     </form>
   </div>

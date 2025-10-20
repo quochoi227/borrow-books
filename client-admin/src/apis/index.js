@@ -43,6 +43,11 @@ export const fetchBooksAPI = async () => {
   return response.data
 }
 
+export const getBookDetailsAPI = async (bookId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books/${bookId}`)
+  return response.data
+}
+
 export const addNewBookAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/books`, data)
   return response.data

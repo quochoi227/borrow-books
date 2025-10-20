@@ -76,7 +76,7 @@ onMounted(() => {
     <div class="my-4">
       <h3 class="text-center text-2xl font-semibold text-primary">Sách nổi bật</h3>
     </div>
-    <div class="bg-gradient-to-br from-sky-100 to-sky-300 py-4">
+    <div class="bg-gradient-to-br from-blue-400 to-blue-800 py-4">
       <!-- <div class="w-full max-w-[1200px] mx-auto grid grid-cols-10 overflow-auto gap-4"> -->
       <div class="w-full flex justify-center">
         <Carousel v-bind="bookList" class="w-[1200px]">
@@ -129,6 +129,9 @@ onMounted(() => {
           </template>
         </Carousel>
       </div>
+    </div>
+    <div class="w-full flex justify-center py-4">
+      <button class="btn btn-outline btn-primary">Xem tất cả</button>
     </div>
   </div>
 </template>

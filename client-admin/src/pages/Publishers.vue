@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { addNewPublisherAPI, fetchPublishersAPI, deleteBookAPI } from '@/apis'
 import { toast } from 'vue3-toastify'
-import BookDetails from '@/pages/BookDetails.vue'
+import BookDetails from '@/pages/__BookDetails.vue'
 
 const disableSubmit = ref(false)
 const publishers = ref([])

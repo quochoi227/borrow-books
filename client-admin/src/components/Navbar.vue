@@ -20,7 +20,6 @@ const confirmLogout = async () => {
 </script>
 <template>
   <div class="navbar justify-between px-5 py-3 p-0 bg-base-100 text-text-primary text-[13px] font-[500]">
-    <!-- <font-awesome-icon icon="fa-solid fa-bell" class="text-lg cursor-pointer" /> -->
     <div class="badge badge-soft badge-primary">Nhân viên</div>
     <button @click="confirmLogout" class="btn btn-ghost">Đăng xuất</button>
   </div>
