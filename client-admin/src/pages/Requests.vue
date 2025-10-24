@@ -83,7 +83,7 @@ const updateRequest = (requestId, status, bookId) => {
       </label>
     </div>
     <div class="w-full overflow-x-auto mt-4">
-      <table class="table">
+      <table class="table bg-base-200">
         <thead>
           <tr>
             <th>TT</th>
@@ -132,7 +132,7 @@ const updateRequest = (requestId, status, bookId) => {
                   </button>
                 </div>
                 <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Từ chối">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECT, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-error">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECTED, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-error">
                     <font-awesome-icon icon="fa-solid fa-xmark" />
                   </button>
                 </div>

@@ -62,7 +62,7 @@ const validatePasswordComfirmation = (value) => {
 }
 </script>
 <template>
-  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-white p-6 grid grid-cols-12 gap-x-4 w-[700px] z-10">
+  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12 gap-x-4 w-[700px] z-10">
     <div class="col-span-12">
       <h1 class="text-center text-2xl font-semibold mb-4">Đăng ký tài khoản</h1>
     </div>

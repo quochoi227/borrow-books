@@ -47,4 +47,6 @@ requestSchema.virtual('sach', {
   justOne: true
 })
 
-export const Request = mongoose.model('Request', requestSchema, 'TheoDoiMuonSach')
+const Request = mongoose.model('Request', requestSchema, 'TheoDoiMuonSach')
+
+export default Request

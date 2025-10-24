@@ -1,5 +1,5 @@
-import { Request } from '../models/requestModel.js'
-import { Book } from '../models/bookModel.js'
+import Request from '../models/requestModel.js'
+import Book from '../models/bookModel.js'
 import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
 import ApiError from '../utils/ApiError.js'
@@ -14,7 +14,7 @@ const REQUEST_STATUS = {
   LOSTED: 'bị mất'
 }
 
-export const requestController = {
+const requestController = {
   addRequest: async (req, res, next) => {
     try {
       const { maDocGia } = req.body
@@ -119,3 +119,5 @@ export const requestController = {
     }
   }
 }
+
+export default requestController

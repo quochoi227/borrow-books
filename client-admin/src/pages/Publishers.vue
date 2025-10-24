@@ -124,7 +124,7 @@ const handleSubmit = () => {
         </button>
       </div>
       <div class="overflow-auto px-2 h-[460px]">
-        <table class="table">
+        <table class="table bg-base-200">
           <thead>
             <tr>
               <th>Mã NXB</th>

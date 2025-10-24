@@ -225,7 +225,7 @@ const confirmDelete = async (maSach) => {
         </button>
       </div>
       <div class="overflow-x-auto px-2">
-        <table class="table">
+        <table class="table bg-base-200">
           <thead>
             <tr>
               <th>Mã sách</th>

@@ -10,7 +10,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/quan-ly-sach'
+      redirect: '/book-management'
     },
     {
       path: '/',
@@ -22,18 +22,18 @@ const router = createRouter({
           component: () => import('@/pages/Dashboard.vue')
         },
         {
-          path: 'quan-ly-sach',
-          name: 'quan-ly-sach',
+          path: 'book-management',
+          name: 'book-management',
           component: BookManagement
         },
         {
-          path: 'quan-ly-muon-sach',
-          name: 'quan-ly-muon-sach',
+          path: 'borrowing-management',
+          name: 'borrowing-management',
           component: () => import('@/pages/Requests.vue')
         },
         {
-          path: 'nha-xuat-ban',
-          name: 'nha-xuat-ban',
+          path: 'publishers',
+          name: 'publishers',
           component: () => import('@/pages/Publishers.vue')
         }
       ]

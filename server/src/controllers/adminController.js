@@ -1,4 +1,4 @@
-import { Admin } from '../models/adminModel.js'
+import Admin from '../models/adminModel.js'
 import bcryptjs from 'bcryptjs'
 import ApiError from '../utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
@@ -7,7 +7,7 @@ import { env } from '../configs/environment.js'
 import ms from 'ms'
 import { pickAdmin } from '../utils/formatters.js'
 
-export const adminController = {
+const adminController = {
   register: async (req, res, next) => {
     try {
       const existAdmin = await Admin.findOne({ dienThoai: req.body.dienThoai })
@@ -71,3 +71,5 @@ export const adminController = {
     }
   }
 }
+
+export default adminController

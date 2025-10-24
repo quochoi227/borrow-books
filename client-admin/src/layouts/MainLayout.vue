@@ -11,11 +11,11 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="flex bg-[#f5f5f5]">
+  <div class="flex">
     <Sidebar />
     <div class="flex-1">
       <Navbar />
-      <div style="min-height: calc(100vh - 64px); max-height: calc(100vh - 64px); overflow-y: auto; background-color: #fff">
+      <div style="min-height: calc(100vh - 64px); max-height: calc(100vh - 64px); overflow-y: auto">
         <RouterView />
       </div>
     </div>

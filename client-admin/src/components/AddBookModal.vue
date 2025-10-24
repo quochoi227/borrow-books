@@ -103,19 +103,17 @@ const closeModal = () => {
             />
             <!-- <img :src="bookImg" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer rounded-lg" alt=""> -->
           </div>
-          <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+          <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer">
             <div class="flex flex-col items-center justify-center p-5">
-              <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-              </svg>
-              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Chọn ảnh bìa</span></p>
+              <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" class="text-3xl" />
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Chọn ảnh bìa</span></p>
             </div>
             <input required id="dropzone-file" @change="handleUploadImage" type="file" class="opacity-0" />
           </label>
         </div>
         <div class="flex w-[320px] flex-wrap justify-center gap-2 mt-4 max-h-56 overflow-auto">
-          <label class="flex flex-col px-3 items-center justify-center w-24 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <font-awesome-icon icon="fa-solid fa-upload" class="text-3xl text-gray-500" />
+          <label class="flex flex-col px-3 items-center justify-center w-24 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer">
+            <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" class="text-2xl" />
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400"><span class="font-semibold">Ảnh chi tiết</span></p>
             <input @change="handleUploadImages" multiple type="file" class="hidden" />
           </label>
@@ -146,7 +144,7 @@ const closeModal = () => {
         </fieldset>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tác giả</legend>
-          <input required v-model="bookData.tacGia" type="text" class="input" placeholder="45000" />
+          <input required v-model="bookData.tacGia" type="text" class="input" placeholder="Nam Cao" />
         </fieldset>
       </div>
       <div class="col-span-4">

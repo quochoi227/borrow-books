@@ -32,7 +32,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-white p-6 grid grid-cols-12">
+  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12">
     <div class="col-span-12">
       <h1 class="text-center text-2xl font-semibold">Đăng nhập</h1>
     </div>

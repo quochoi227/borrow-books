@@ -1,6 +1,6 @@
-import { Publisher } from '../models/publisherModel.js'
+import Publisher from '../models/publisherModel.js'
 
-export const publisherController = {
+const publisherController = {
   getAllPublishers: async (req, res) => {
     try {
       const publisher = await Publisher.find()
@@ -19,3 +19,5 @@ export const publisherController = {
     }
   }
 }
+
+export default publisherController

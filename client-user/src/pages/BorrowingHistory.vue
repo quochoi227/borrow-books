@@ -110,7 +110,7 @@ onMounted(() => {
           <td>{{ req.hanTra ? formatDate(req.hanTra) : '' }}</td>
           <td>
             <div v-if="req.hanTra && Date.now() > new Date(req.hanTra)" class="badge badge-error">quá hạn</div>
-            <div v-else-if="req.hanTra" class="badge badge-error">Còn {{ Math.ceil((new Date(req.hanTra) - new Date(Date.now())) / 86400000) }} ngày</div>
+            <div v-else-if="req.hanTra && !req.ngayTra" class="badge badge-error">Còn {{ Math.ceil((new Date(req.hanTra) - new Date(Date.now())) / 86400000) }} ngày</div>
             <span v-else></span>
           </td>
           <td>{{ req.ngayTra ? formatDate(req.ngayTra) : '' }}</td>

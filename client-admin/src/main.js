@@ -20,6 +20,12 @@ import 'vue3-toastify/dist/index.css';
 // Confirmation
 import * as ConfirmDialog from 'vuejs-confirm-dialog'
 
+// Theme
+const savedTheme = localStorage.getItem('borrow-books-admin-theme')
+if (savedTheme) {
+  document.documentElement.dataset.theme = savedTheme
+}
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 

@@ -1,5 +1,5 @@
 import express from 'express'
-import { publisherController } from '../../controllers/publisherController.js'
+import publisherController from '../../controllers/publisherController.js'
 
 const Router = express.Router()
 

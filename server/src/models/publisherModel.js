@@ -12,4 +12,6 @@ const publisherSchema = new mongoose.Schema({
   }
 })
 
-export const Publisher = mongoose.model('Publisher', publisherSchema, 'NhaXuatBan')
+const Publisher = mongoose.model('Publisher', publisherSchema, 'NhaXuatBan')
+
+export default Publisher

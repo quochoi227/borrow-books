@@ -13,79 +13,86 @@ const activeItemClasses = 'menu-active'
 const isOpen = ref(true)
 </script>
 <template>
-  <div :style="{ width: isOpen ? '270px' : '80px', minWidth: isOpen ? '270px' : '80px' }" class="bg-white transition-all duration-300 flex flex-col select-none">
+  <div :style="{ width: isOpen ? '270px' : '80px', minWidth: isOpen ? '270px' : '80px' }" :class="[isOpen ? 'rounded-r-2xl' : '', 'transition-width bg-base-300 duration-300 flex flex-col select-none']">
     <div class="py-2 px-4 max-h-[70px] overflow-hidden flex items-center justify-center">
       <div v-if="isOpen">
         <button class="btn text-2xl font-[K2D] font-bold text-primary">BORROWEE</button>
-        <!-- <p>Mượn sách dễ dàng</p> -->
       </div>
-      <!-- <img width="44px" :src="book_icon" alt="Logo"> -->
       <div v-else="isOpen">
         <button class="btn text-2xl font-[K2D] font-bold text-primary">B</button>
-        <!-- <p>Mượn sách dễ dàng</p> -->
       </div>
     </div>
     <div class="mt-4">
       <ul class="menu gap-1 w-full cursor-pointer">
-        <router-link to="/dashboard">
+        <router-link v-if="isOpen" to="/dashboard">
           <li>
             <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/dashboard' }]">
               <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
-              <p v-if="isOpen" class="whitespace-nowrap">Dashboard</p>
+              <p class="whitespace-nowrap">Dashboard</p>
             </span>
           </li>
         </router-link>
-        <router-link to="/quan-ly-sach">
+        <div v-else data-tip="Dashboard" class="tooltip tooltip-right">
+          <router-link to="/dashboard">
+            <li>
+              <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/dashboard' }]">
+                <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
+              </span>
+            </li>
+          </router-link>
+        </div>
+        <router-link v-if="isOpen" to="/book-management">
           <li>
-            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/quan-ly-sach' }]">
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/book-management' }]">
               <font-awesome-icon icon="fa-solid fa-book" class="text-xl" />
-              <p v-if="isOpen" class="whitespace-nowrap">Quản lý sách</p>
+              <p class="whitespace-nowrap">Quản lý sách</p>
             </span>
           </li>
         </router-link>
-        <router-link to="/quan-ly-muon-sach">
+        <div v-else data-tip="Quản lý sách" class="tooltip tooltip-right">
+          <router-link to="/book-management">
+            <li>
+              <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/book-management' }]">
+                <font-awesome-icon icon="fa-solid fa-book" class="text-xl" />
+              </span>
+            </li>
+          </router-link>
+        </div>
+        <router-link v-if="isOpen" to="/borrowing-management">
           <li>
-            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/quan-ly-muon-sach' }]">
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/borrowing-management' }]">
               <font-awesome-icon icon="fa-solid fa-hand" class="text-xl" />
-              <p v-if="isOpen" class="whitespace-nowrap">Quản lý mượn sách</p>
+              <p class="whitespace-nowrap">Quản lý mượn sách</p>
             </span>
           </li>
         </router-link>
-        <router-link to="/nha-xuat-ban">
+        <div v-else data-tip="Quản lý mượn sách" class="tooltip tooltip-right">
+          <router-link to="/borrowing-management">
+            <li>
+              <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/borrowing-management' }]">
+                <font-awesome-icon icon="fa-solid fa-hand" class="text-xl" />
+              </span>
+            </li>
+          </router-link>
+        </div>
+        <router-link v-if="isOpen" to="/publishers">
           <li>
-            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/nha-xuat-ban' }]">
+            <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/publishers' }]">
               <font-awesome-icon icon="fa-solid fa-house-user" class="text-xl" />
-              <p v-if="isOpen" class="whitespace-nowrap">Nhà xuất bản</p>
+              <p class="whitespace-nowrap">Nhà xuất bản</p>
             </span>
           </li>
         </router-link>
+        <div v-else data-tip="Nhà xuất bản" class="tooltip tooltip-right">
+          <router-link to="/publishers">
+            <li>
+              <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/publishers' }]">
+                <font-awesome-icon icon="fa-solid fa-house-user" class="text-xl" />
+              </span>
+            </li>
+          </router-link>
+        </div>
       </ul>
-      <!-- <ul class="cursor-pointer">
-        <router-link to="/dashboard">
-          <li :style="{ justifyContent: isOpen ? 'flex-start' : 'center' }" :class="[sidebarItemClassess, { [activeClasses]: route.path === '/dashboard' }]">
-            <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
-            <p v-if="isOpen" class="whitespace-nowrap">Dashboard</p>
-          </li>
-        </router-link>
-        <router-link to="/quan-ly-sach">
-          <li :style="{ justifyContent: isOpen ? 'flex-start' : 'center' }" :class="[sidebarItemClassess, 'mt-1', { [activeClasses]: route.path === '/quan-ly-sach' }]">
-            <font-awesome-icon icon="fa-solid fa-book" class="text-xl" />
-            <p v-if="isOpen" class="whitespace-nowrap">Quản lý sách</p>
-          </li>
-        </router-link>
-        <router-link to="/quan-ly-muon-sach">
-          <li :style="{ justifyContent: isOpen ? 'flex-start' : 'center' }" :class="[sidebarItemClassess, 'mt-1', { [activeClasses]: route.path === '/quan-ly-muon-sach' }]">
-            <font-awesome-icon icon="fa-solid fa-hand" class="text-xl" />
-            <p v-if="isOpen" class="whitespace-nowrap">Quản lý mượn sách</p>
-          </li>
-        </router-link>
-        <router-link to="/nha-xuat-ban">
-          <li :style="{ justifyContent: isOpen ? 'flex-start' : 'center' }" :class="[sidebarItemClassess, 'mt-1', { [activeClasses]: route.path === '/nha-xuat-ban' }]">
-            <font-awesome-icon icon="fa-solid fa-house-user" class="text-xl" />
-            <p v-if="isOpen" class="whitespace-nowrap">Nhà xuất bản</p>
-          </li>
-        </router-link>
-      </ul> -->
     </div>
     <div @click="isOpen = !isOpen" class="mt-auto w-full py-3 flex justify-center cursor-pointer">
       <button v-if="isOpen" class="btn btn-circle">

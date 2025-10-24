@@ -78,10 +78,10 @@ const handleSubmit = () => {
 }
 </script>
 <template>
-  <div style="height: calc(100vh - 68px); overflow-y: auto;" class="bg-[#f5f5f5] pt-4">
+  <div style="height: calc(100vh - 68px); overflow-y: auto;" class="bg-base-200 pt-4">
     <div class="flex gap-4 max-w-[1200px] mx-auto rounded-lg">
       <div class="w-5/12 flex flex-col gap-4">
-        <div class="flex flex-col items-center bg-white p-4 rounded-lg h-fit">
+        <div class="flex flex-col items-center bg-base-100 p-4 rounded-lg h-fit">
           <div class="w-full">
             <Carousel id="gallery" class="w-full" v-bind="galleryConfig" v-model="currentSlide">
               <Slide v-for="(image, index) in images" :key="index">
@@ -112,7 +112,7 @@ const handleSubmit = () => {
             <button v-else disabled class="btn w-56">Hết sách</button>
           </div>
         </div>
-        <!-- <div class="p-4 rounded-lg bg-white">
+        <!-- <div class="p-4 rounded-lg bg-base-100">
           <h3 class="font-semibold text-lg">Đánh giá sản phẩm</h3>
           <div class="rating">
             <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" aria-label="1 star" />
@@ -124,7 +124,7 @@ const handleSubmit = () => {
         </div> -->
       </div>
       <div class="w-7/12 flex flex-col gap-4">
-        <div class="bg-white p-4 rounded-lg">
+        <div class="bg-base-100 p-4 rounded-lg">
           <h2 class="text-2xl">{{ book.tenSach }}</h2>
           <div class="w-full mt-2">
             <div class="w-[60%] inline-block text-sm">
@@ -141,7 +141,7 @@ const handleSubmit = () => {
             <span v-for="genre in book.theLoai" class="badge badge-info mr-1">{{ genre }}</span>
           </div>
         </div>
-        <div class="bg-white p-4 rounded-lg">
+        <div class="bg-base-100 p-4 rounded-lg">
           <h3 class="font-semibold text-lg">Thông tin chi tiết</h3>
           <div class="overflow-x-auto mt-4">
             <table class="table">
@@ -170,7 +170,7 @@ const handleSubmit = () => {
             </table>
           </div>
         </div>
-        <div class="bg-white p-4 rounded-lg">
+        <div class="bg-base-100 p-4 rounded-lg">
           <h3 class="font-semibold text-lg">Mô tả</h3>
           <p class="mt-4 text-sm">{{ book.moTa }}</p>
           <div class="relative">
@@ -181,7 +181,7 @@ const handleSubmit = () => {
             ]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!</p>
             <div
               v-if="!expanded"
-              class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent pointer-events-none"
+              class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-base-100 to-transparent pointer-events-none"
             ></div>
           </div>
           <div class="w-full flex justify-center">
@@ -195,7 +195,7 @@ const handleSubmit = () => {
         </div>
       </div>
     </div>
-    <div class="gap-4 max-w-[1200px] mx-auto rounded-lg bg-white mt-4 p-4">
+    <div class="gap-4 max-w-[1200px] mx-auto rounded-lg bg-base-100 mt-4 p-4">
       <h3 class="font-semibold text-lg">Thảo luận</h3>
       <!-- <div class="flex mt-2 gap-4">
         <div class="flex flex-col gap-1 items-center justify-center">

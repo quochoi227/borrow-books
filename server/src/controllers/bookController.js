@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
-import { Book } from '../models/bookModel.js'
+import Book from '../models/bookModel.js'
 import { CloudinaryProvider } from '../providers/CloudinaryProvider.js'
 
-export const bookController = {
+const bookController = {
   // ADD AN BOOK
   addBook: async (req, res) => {
     try {
@@ -101,3 +101,5 @@ export const bookController = {
     }
   }
 }
+
+export default bookController

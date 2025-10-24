@@ -1,4 +1,4 @@
-import { User } from '../models/userModel.js'
+import User from '../models/userModel.js'
 import bcryptjs from 'bcryptjs'
 import ApiError from '../utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
@@ -7,7 +7,7 @@ import { env } from '../configs/environment.js'
 import ms from 'ms'
 import { pickUser } from '../utils/formatters.js'
 
-export const userController = {
+const userController = {
   getAllUsers: async (req, res, next) => {
     try {
       const users = await User.find()
@@ -79,3 +79,5 @@ export const userController = {
     }
   }
 }
+
+export default userController

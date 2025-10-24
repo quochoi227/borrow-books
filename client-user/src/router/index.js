@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainLayout from '@/layouts/MainLayout.vue'
+import LandingPage from '@/layouts/LandingPage.vue'
 import Auth from '@/pages/Auth.vue'
 import Home from '@/pages/Home.vue'
-import BorrowingHistory from '@/pages/BorrowingHistory.vue'
-import BookDetails from '@/pages/BookDetails.vue'
-import NotFound from '@/pages/NotFound.vue'
+import AllBooks from '@/pages/AllBooks.vue'
 import { PROTECTED_ROUTES } from '@/utils/constants'
 import { useUserStore } from '@/stores/userStore'
 
@@ -17,7 +15,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: MainLayout,
+      component: LandingPage,
       children: [
         {
           path: 'home',
@@ -26,14 +24,26 @@ const router = createRouter({
         },
         {
           path: 'books/:id',
-          component: BookDetails
+          name: 'book-details',
+          component: () => import('@/pages/BookDetails.vue'),
+        }
+      ]
+    },
+    {
+      path: '/',
+      component: () => import('@/layouts/MainLayout.vue'),
+      children: [
+        {
+          path: '/books',
+          name: 'books',
+          component: AllBooks
         }
       ]
     },
     {
       path: '/borrowing-history',
       name: 'borrowing-history',
-      component: BorrowingHistory
+      component: () => import('@/pages/BorrowingHistory.vue'),
     },
     {
       path: '/register',
@@ -49,7 +59,7 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
-      component: NotFound
+      component: () => import('@/pages/NotFound.vue')
     }
   ],
 })

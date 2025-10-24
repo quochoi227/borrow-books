@@ -53,4 +53,6 @@ bookSchema.virtual('nhaXuatBan', {
   justOne: true
 })
 
-export const Book = mongoose.model('Book', bookSchema, 'Sach')
+const Book = mongoose.model('Book', bookSchema, 'Sach')
+
+export default Book

@@ -17,7 +17,7 @@ export const BOOK_GENRES = [
   'Sách dạy nấu ăn'
 ]
 
-export const PROTECTED_ROUTES = ['quan-ly-sach', 'quan-ly-muon-sach', 'dashboard', 'nha-xuat-ban', 'book-details']
+export const PROTECTED_ROUTES = ['book-management', 'borrowing-management', 'dashboard', 'publishers', 'book-details']
 
 export const REQUEST_STATUS = {
   PENDING: 'chờ duyệt',
