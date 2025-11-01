@@ -2,27 +2,12 @@
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark, winter, night;
+  exclude: rootscrollgutter;
 }
 
 #app {
   font-family: Readex Pro;
 }
-
-/* .input,
-.select,
-.textarea {
-  outline-color: var(--color-sky-500);
-  outline-offset: 0;
-} */
-
-/* .input:focus,
-.input:focus-within,
-.select:focus,
-.select:focus-within,
-.textarea:focus,
-.textarea:focus-within {
-  border-color: transparent;
-} */
 
 .auth-appear {
   animation: appear 0.2s ease-in-out;
@@ -37,13 +22,3 @@
     transform: scale(1);
   }
 }
-
-/* .input, .file-input, .select, .textarea {
-  outline-offset: 0;
-  outline-width: 0;
-  outline-width: var(--width-3);
-  outline-color: var(--color-sky-500);
-  &:focus, &:focus-within {
-    border-color: transparent;
-  }
-} */

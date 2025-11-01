@@ -17,10 +17,15 @@ export const logoutAPI = async () => {
   return response.data
 }
 
-// Books
-export const fetchBooksAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books`)
+export const refreshTokenAPI = async () => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/refresh-token`)
   return response.data
+}
+
+// Books
+export const fetchBooksAPI = async ({ sortBy, page = 1, limit = 1000, search, publisher, stockState, genres = '[]' }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books?page=${page}&limit=${limit}&search=${search || ''}&publisher=${publisher || ''}&stockState=${stockState || ''}&genres=${genres}&sortBy=${sortBy}`)
+  return response.data.books
 }
 
 export const getBookDetailsAPI = async (bookId) => {

@@ -2,9 +2,11 @@
 import { registerAPI } from '@/apis'
 import { reactive } from 'vue'
 import { Form, Field, ErrorMessage } from 'vee-validate'
-import book from '@/assets/images/book-svgrepo-com.svg'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
 import router from '@/router'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const registerInfo = reactive({
   hoLot: '',
@@ -18,7 +20,8 @@ const registerInfo = reactive({
 
 const handleSubmit = (values) => {
   registerAPI(values).then(() => {
-    router.push(`/login?registeredPhone=${registerInfo.dienThoai}`)
+    toast.success('Đăng ký tài khoản thành công!')
+    router.push('/login')
   })
 }
 

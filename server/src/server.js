@@ -23,6 +23,11 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors(corsOptions))
 
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
 // Static
 
 app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')))

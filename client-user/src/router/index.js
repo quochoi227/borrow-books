@@ -26,13 +26,7 @@ const router = createRouter({
           path: 'books/:id',
           name: 'book-details',
           component: () => import('@/pages/BookDetails.vue'),
-        }
-      ]
-    },
-    {
-      path: '/',
-      component: () => import('@/layouts/MainLayout.vue'),
-      children: [
+        },
         {
           path: '/books',
           name: 'books',
@@ -40,6 +34,17 @@ const router = createRouter({
         }
       ]
     },
+    // {
+    //   path: '/',
+    //   component: () => import('@/layouts/MainLayout.vue'),
+    //   children: [
+    //     {
+    //       path: '/books',
+    //       name: 'books',
+    //       component: AllBooks
+    //     }
+    //   ]
+    // },
     {
       path: '/borrowing-history',
       name: 'borrowing-history',

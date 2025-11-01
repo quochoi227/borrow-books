@@ -2,11 +2,14 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { updateBookAPI, getBookDetailsAPI, fetchPublishersAPI } from '@/apis'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
 import { API_ROOT, BOOK_GENRES } from '@/utils/constants'
 import { useBookStore } from '@/stores/bookStore'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 // Crop image
 const cropperRef = ref(null);
@@ -115,10 +118,7 @@ const handleSubmit = async () => {
     }
   })
   updateBookAPI(bookData._id, formData).then((book) => {
-    toast.success("Cập nhật sách thành công", {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
+    toast.success("Cập nhật sách thành công")
     bookStore.setBook(book)
   })
 }

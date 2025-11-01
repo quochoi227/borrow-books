@@ -4,7 +4,7 @@ import { env } from '../configs/environment.js'
 import ApiError from '../utils/ApiError.js'
 
 const isAuthorized = async (req, res, next) => {
-  const clientAccessToken = req.cookies?.accessToken
+  const clientAccessToken = req.cookies?.userAccessToken
   if (!clientAccessToken) {
     next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized! (token not found) hahaha'))
     return
@@ -12,7 +12,7 @@ const isAuthorized = async (req, res, next) => {
 
   try {
     const accessTokenDecoded = await JwtProvider.verifyToken(clientAccessToken, env.ACCESS_TOKEN_SECRET_SIGNATURE)
-    req.jwtDecoded = accessTokenDecoded
+    req.userDecoded = accessTokenDecoded
     next()
   } catch (error) {
     if (error?.message?.includes('jwt expired')) {

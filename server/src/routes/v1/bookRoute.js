@@ -1,6 +1,7 @@
 import express from 'express'
 import bookController from '../../controllers/bookController.js'
 import multerUploadMiddleware from '../../middlewares/multerUploadMiddleware.js'
+import { authMiddleware } from '../../middlewares/userAuthMiddleware.js'
 
 const Router = express.Router()
 

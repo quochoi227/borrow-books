@@ -38,8 +38,8 @@ export const adminLogoutAPI = async () => {
 }
 
 // Books
-export const fetchBooksAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books`)
+export const fetchBooksAPI = async ({ page, limit, search, publisher, stockState, genres = '[]' }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books?page=${page}&limit=${limit}&search=${search || ''}&publisher=${publisher || ''}&stockState=${stockState || ''}&genres=${genres}`)
   return response.data
 }
 

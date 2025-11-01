@@ -12,7 +12,7 @@ const emit = defineEmits(['confirm', 'cancel'])
         <p class="text-center mt-1">{{ description }}</p>
         <!-- The modal component body -->
         <div class="flex justify-end mt-4">
-          <button class="btn btn-primary" @click="emit('confirm')">Đồng ý</button>
+          <button class="btn btn-soft btn-primary" @click="emit('confirm')">Đồng ý</button>
           <button class="btn ml-2 btn-ghost" @click="emit('cancel')">Từ chối</button>
         </div>
       </div>

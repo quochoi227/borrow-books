@@ -13,7 +13,7 @@ const { logoutUserAPI } = userStore
 
 const handleLogout = async () => {
   await logoutUserAPI()
-  router.push('/login')
+  router.push('/')
 }
 
 const navItemClasses = 'px-2 text-gray-500 hover:text-gray-800 transition-color duration-200 min-h-[68px] max-h-[68px] flex items-center justify-center'

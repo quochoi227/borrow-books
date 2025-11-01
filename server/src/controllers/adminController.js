@@ -12,7 +12,7 @@ const adminController = {
     try {
       const existAdmin = await Admin.findOne({ dienThoai: req.body.dienThoai })
       if (existAdmin) {
-        throw new ApiError(StatusCodes.CONFLICT, 'Người dùng đã tồn tạizzz')
+        throw new ApiError(StatusCodes.CONFLICT, 'Người dùng đã tồn tại')
       }
       const adminInfo = {
         ...req.body,
@@ -37,7 +37,8 @@ const adminController = {
       const adminInfo = {
         _id: existAdmin._id,
         maNhanVien: existAdmin.maNhanVien,
-        dienThoai: existAdmin.dienThoai
+        dienThoai: existAdmin.dienThoai,
+        chucVu: existAdmin.chucVu
       }
       const accessToken = await JwtProvider.generateToken(adminInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
       const refreshToken = await JwtProvider.generateToken(adminInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)

@@ -3,7 +3,10 @@ import { onMounted, reactive } from 'vue'
 import { Form, Field } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const route = useRoute()
 const router = useRouter()
@@ -17,32 +20,32 @@ const registerInfo = reactive({
 })
 
 const handleSubmit = (values) => {
-  toast.promise(
-    loginUserAPI(values),
-    { pending: 'Đang đăng nhập' }
-  ).then(() => {
+  // toast.promise(
+  //   loginUserAPI(values),
+  //   { pending: 'Đang đăng nhập' }
+  // ).then(() => {
+  //   router.push('/home')
+  // })
+  loginUserAPI(values).then(() => {
     router.push('/home')
   })
 }
 
-onMounted(() => {
-  if (route.query.registeredPhone) {
-    toast.success('Đăng ký tài khoản thành công!')
-  }
-})
+// onMounted(() => {
+//   if (route.query.registeredPhone) {
+//     toast.success('Đăng ký tài khoản thành công!')
+//   }
+// })
 </script>
 <template>
   <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12">
+    <div class="col-span-12 mx-auto">
+      <RouterLink to="/">
+        <button type="button" class="btn text-2xl font-[K2D] font-bold text-primary">B</button>
+      </RouterLink>
+    </div>
     <div class="col-span-12">
       <h1 class="text-center text-2xl font-semibold">Đăng nhập</h1>
-    </div>
-    <div v-if="route.query.registeredPhone" class="col-span-12">
-      <div role="alert" class="alert alert-success alert-soft alert-vertical sm:alert-horizontal mt-4">
-        <div>
-          <h3 class="font-bold">Đăng ký tài khoản thành công!</h3>
-          <div class="text-xs">Đăng nhập để sử dụng!</div>
-        </div>
-      </div>
     </div>
     <div class="col-span-12">
       <div>

@@ -1,18 +1,21 @@
 <script setup>
 import { getBookDetailsAPI } from '@/apis'
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
 import { useUserStore } from '@/stores/userStore'
 import { API_ROOT } from '@/utils/constants'
 import { addNewRequestAPI } from '@/apis'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
 import { formatCurrency } from '../utils/formatters'
 import moment from 'moment'
 
 import 'vue3-carousel/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const currentSlide = ref(0)
 
@@ -35,12 +38,15 @@ const thumbnailsConfig = {
 }
 
 const route = useRoute()
+const router = useRouter()
 const book = reactive({})
 const userStore = useUserStore()
 
 onMounted(() => {
   getBookDetailsAPI(route.params.id).then((data) => {
     Object.assign(book, data)
+  }).catch(() => {
+    router.push('/')
   })
 })
 
@@ -49,6 +55,10 @@ const expanded = ref(false)
 const dialog = createConfirmDialog(ModalDialog)
 
 const confirmDelete = async () => {
+  if (userStore.currentActiveUser === null) {
+    router.push('/login')
+    return
+  }
   const { isCanceled } = await dialog.reveal({
     title: 'Xác nhận gửi yêu cầu mượn sách?',
     description: 'Bạn sẽ phải trả ' + formatCurrency(book.donGia || 0) + ' nếu làm mất'
@@ -178,7 +188,9 @@ const handleSubmit = () => {
             <p class="text-sm" :class="[
               'overflow-hidden',
               expanded ? 'max-h-full' : 'max-h-[150px]'
-            ]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit maxime illo sint explicabo placeat dolores quis pariatur corporis iure vero adipisci maiores modi, distinctio nemo? Impedit similique suscipit, ipsam delectus deserunt nostrum, omnis facere enim molestias rerum beatae iure autem ducimus ea, nisi distinctio sapiente magnam dolorem excepturi harum unde ratione? Earum amet non laudantium dicta aliquid perspiciatis excepturi eveniet recusandae id ipsam nobis, alias accusamus labore! Odit excepturi laudantium eum voluptatem repudiandae, molestias animi, numquam magnam veritatis itaque ea! Beatae repudiandae cum distinctio esse iure voluptatibus nobis praesentium consequatur excepturi, nisi eius soluta voluptate, mollitia, libero neque vero exercitationem!</p>
+            ]">
+              {{ book.moTa }}
+            </p>
             <div
               v-if="!expanded"
               class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-base-100 to-transparent pointer-events-none"

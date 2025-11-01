@@ -29,7 +29,21 @@ function prepareForUpload(canvas) {
 
 const props = defineProps(['bookData', 'publishers'])
 const emit = defineEmits(['submit', 'closeModal'])
-const bookData = reactive(props.bookData)
+const bookData = reactive({
+  maSach: '',
+  tenSach: '',
+  tacGia: '',
+  donGia: '',
+  soQuyen: '',
+  soQuyenConLai: '',
+  namXuatBan: '',
+  maNXB: '',
+  moTa: '',
+  anhBia: null,
+  anhChiTiet: [],
+  theLoai: []
+})
+
 const disableSubmit = ref(false)
 
 watch(() => props.bookData, (newVal) => {

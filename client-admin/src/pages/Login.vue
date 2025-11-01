@@ -3,7 +3,10 @@ import { onMounted, reactive } from 'vue'
 import { Form, Field } from 'vee-validate'
 import { useRouter, useRoute } from 'vue-router'
 import { useAdminStore } from '@/stores/adminStore'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const route = useRoute()
 const router = useRouter()
@@ -17,19 +20,23 @@ const registerInfo = reactive({
 })
 
 const handleSubmit = (values) => {
-  toast.promise(
-    loginAdminAPI(values),
-    { pending: 'Đang đăng nhập' }
-  ).then(() => {
+  // toast.promise(
+  //   loginAdminAPI(values),
+  //   { pending: 'Đang đăng nhập' }
+  // ).then(() => {
+  //   router.push('/')
+  // })
+  loginAdminAPI(values).then(() => {
+    toast.success('Đăng nhập thành công!')
     router.push('/')
   })
 }
 
-onMounted(() => {
-  if (route.query.registeredPhone) {
-    toast.success('Đăng ký tài khoản thành công!')
-  }
-})
+// onMounted(() => {
+//   if (route.query.registeredPhone) {
+//     toast.success('Đăng ký tài khoản thành công!')
+//   }
+// })
 </script>
 <template>
   <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12">

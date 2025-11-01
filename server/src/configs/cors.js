@@ -13,7 +13,7 @@ export const corsOptions = {
     // }
     return callback(null, true)
     // Cuối cùng nếu domain không được chấp nhận thì trả về lỗi
-    // return callback(new ApiError(StatusCodes.FORBIDDEN, `${origin} not allowed by our CORS Policy.`))
+    return callback(new ApiError(StatusCodes.FORBIDDEN, `${origin} not allowed by our CORS Policy.`))
   },
 
   // Some legacy browsers (IE11, various SmartTVs) choke on 204

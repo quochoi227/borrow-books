@@ -23,9 +23,34 @@ const bookController = {
   },
   // GET ALL BOOKS
   getAllBooks: async (req, res) => {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 5
+    const tenSach = req.query.search ? { $regex: req.query.search, $options: 'i' } : { $exists: true }
+    const maNXB = req.query.publisher ? req.query.publisher : { $exists: true }
+    const soQuyenConLai = req.query.stockState === 'available' ? { $gt: 0 } : req.query.stockState === 'unavailable' ? 0 : { $exists: true }
+    const theLoai = req.query.genres !== '[]' ? { $in: JSON.parse(req.query.genres) } : { $exists: true }
+    const sortBy = req.query.sortBy || 'maSach'
     try {
-      const books = await Book.find().populate('nhaXuatBan').exec()
-      res.status(200).json(books)
+      const [books, count] = await Promise.all([
+        Book.find({
+          tenSach,
+          maNXB,
+          soQuyenConLai,
+          theLoai
+        })
+        .sort({ [sortBy]: sortBy !== 'luotMuon' ? 1 : -1 })
+        .populate('nhaXuatBan')
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec(),
+        Book.countDocuments({
+          tenSach,
+          maNXB,
+          soQuyenConLai,
+          theLoai
+        })
+      ])
+      res.status(200).json({ books, totalPages: Math.ceil(count / limit), count })
     } catch (error) {
       res.status(500).json(error)
     }

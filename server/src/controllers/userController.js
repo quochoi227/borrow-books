@@ -47,8 +47,18 @@ const userController = {
         maDocGia: existUser.maDocGia,
         dienThoai: existUser.dienThoai
       }
-      const accessToken = await JwtProvider.generateToken(userInfo, env.ACCESS_TOKEN_SECRET_SIGNATURE, env.ACCESS_TOKEN_LIFE)
-      const refreshToken = await JwtProvider.generateToken(userInfo, env.REFRESH_TOKEN_SECRET_SIGNATURE, env.REFRESH_TOKEN_LIFE)
+      const accessToken = await JwtProvider.generateToken(
+        userInfo,
+        env.ACCESS_TOKEN_SECRET_SIGNATURE,
+        5
+        // env.ACCESS_TOKEN_LIFE
+      )
+      const refreshToken = await JwtProvider.generateToken(
+        userInfo,
+        env.REFRESH_TOKEN_SECRET_SIGNATURE,
+        15
+        // env.REFRESH_TOKEN_LIFE
+      )
 
       res.cookie(env.ACCESS_TOKEN_USER_NAME, accessToken, {
         httpOnly: true,
@@ -76,6 +86,37 @@ const userController = {
       res.status(StatusCodes.OK).json({ loggedOut: true })
     } catch (error) {
       next(error)
+    }
+  },
+  refreshToken: async (req, res, next) => {
+    try {
+      const clientRefreshToken = req.cookies?.userRefreshToken
+      if (!clientRefreshToken) {
+        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized! (token not found) hahaha')
+      }
+      const refreshTokenDecoded = await JwtProvider.verifyToken(clientRefreshToken, env.REFRESH_TOKEN_SECRET_SIGNATURE)
+
+      const userInfo = {
+        _id: refreshTokenDecoded._id,
+        maDocGia: refreshTokenDecoded.maDocGia,
+        dienThoai: refreshTokenDecoded.dienThoai
+      }
+      const newAccessToken = await JwtProvider.generateToken(
+        userInfo,
+        env.ACCESS_TOKEN_SECRET_SIGNATURE,
+        5
+        // env.ACCESS_TOKEN_LIFE
+      )
+
+      res.cookie(env.ACCESS_TOKEN_USER_NAME, newAccessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: ms('14 days')
+      })
+      res.status(StatusCodes.OK).json({ accessToken: newAccessToken })
+    } catch (error) {
+      next(new ApiError(StatusCodes.FORBIDDEN, 'Please sign in! (Error from refresh token)'))
     }
   }
 }

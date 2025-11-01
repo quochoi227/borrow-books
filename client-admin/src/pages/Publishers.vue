@@ -1,8 +1,11 @@
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { addNewPublisherAPI, fetchPublishersAPI, deleteBookAPI } from '@/apis'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
 import BookDetails from '@/pages/__BookDetails.vue'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const disableSubmit = ref(false)
 const publishers = ref([])
@@ -66,10 +69,7 @@ const handleSubmit = () => {
     if (currentPage.value === pageSum.value && publishersAfter.length < rowsPerPage.value) {
       publishersAfter.push(data)
     }
-    toast.success('Thêm nhà xuất bản thành công!', {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
+    toast.success('Thêm nhà xuất bản thành công!')
   })
 }
 </script>

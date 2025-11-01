@@ -1,14 +1,6 @@
 <script setup>
 import Sidebar from '@/components/Sidebar.vue'
 import Navbar from '@/components/Navbar.vue'
-import { useBookStore } from '@/stores/bookStore'
-import { onMounted } from 'vue'
-
-const bookStore = useBookStore()
-
-onMounted(() => {
-  bookStore.fetchBooks()
-})
 </script>
 <template>
   <div class="flex">

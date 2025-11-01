@@ -1,20 +1,30 @@
 <script setup>
-import { ref, reactive, onMounted, watch, computed, onUnmounted } from 'vue'
-import { addNewBookAPI, deleteBookAPI, fetchPublishersAPI } from '@/apis'
-import { toast } from 'vue3-toastify'
+import { ref, toRefs, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { deleteBookAPI } from '@/apis'
+// import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
-import { cloneDeep } from 'lodash'
 import { API_ROOT } from '@/utils/constants'
 import { formatCurrency } from '@/utils/formatters'
 import AddBookModal from '@/components/AddBookModal.vue'
 import { useDebounceFn } from '@/composables/useDebounceFn'
 import { useBookStore } from '@/stores/bookStore'
 
-const bookStore = useBookStore()
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
+const route = useRoute()
+const router = useRouter()
+// Access book store
+const bookStore = useBookStore()
+const { books, publishers, totalPages } = toRefs(bookStore)
+const { addBook, deleteBook, fetchBooks, fetchPublishers } = bookStore
+
+// Handle search input with debounce
 const handleInput = (value) => {
   searchValue.value = value
+  fetchBooks({ search: searchValue.value })
 }
 
 const debouncedInput = useDebounceFn(handleInput, 500)
@@ -22,130 +32,48 @@ const debouncedInput = useDebounceFn(handleInput, 500)
 const handleInputChange = (e) => {
   debouncedInput.value(e.target.value)
 }
+const currentPage = ref(1)
+const searchValue = ref('')
+const publisherValue = ref('')
+const stockState = ref('available')
+
+watch(() => route.query, (newQuery) => {
+  const page = parseInt(newQuery.page) || 1
+  currentPage.value = page
+  fetchBooks({ page, search: searchValue.value, publisher: publisherValue.value, stockState: stockState.value })
+}, { immediate: true })
+
+onMounted(() => {
+  fetchPublishers()
+})
 
 const modal = ref(null)
 
-const books = ref([])
-const publishers = ref([])
+watch(publisherValue, (newVal) => {
+  fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: newVal, stockState: stockState.value })
+})
 
-const rowsPerPage = ref(5)
-const currentPage = ref(1)
-const pageSum = ref(0)
-
-const filterMode = ref(false)
-
-const searchValue = ref('')
-const publisherValue = ref('all')
-const stockState = ref('available')
+watch(stockState, (newVal) => {
+  fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: publisherValue.value, stockState: newVal })
+})
 
 const handleIncrease = () => {
-  if (currentPage.value < pageSum.value) {
+  if (currentPage.value < totalPages.value) {
     currentPage.value++
+    router.replace({ query: { page: currentPage.value } })
   }
 }
 
 const handleDecrease = () => {
   if (currentPage.value > 1) {
     currentPage.value--
+    router.replace({ query: { page: currentPage.value } })
   }
 }
-
-watch(() => books.value.length, (newVal) => {
-  pageSum.value = Math.ceil(newVal / rowsPerPage.value)
-  if (newVal % rowsPerPage.value === 0 && currentPage.value > 1 && currentPage.value === pageSum.value + 1) {
-    currentPage.value--
-  }
-})
-
-watch(
-  () => bookStore.books,
-  (newBooks) => {
-    books.value = newBooks
-    pageSum.value = Math.ceil(newBooks.length / rowsPerPage.value)
-  },
-  { immediate: true }
-)
-
-onMounted(() => {
-  fetchPublishersAPI().then((data) => {
-    publishers.value = data
-  })
-})
-
-onUnmounted(() => {
-  bookStore.setBooks(books.value)
-})
-
-const remainingCheck = (num) => {
-  if (num === 0) return 'out-of-stock'
-  return 'available'
-}
-
-const booksAfter = computed(() => {
-  if (searchValue.value === '' && publisherValue.value === 'all' && stockState.value === 'available') {
-    filterMode.value = false
-    return books.value.slice((currentPage.value - 1) * rowsPerPage.value, (currentPage.value - 1) * rowsPerPage.value + rowsPerPage.value)
-  } else {
-    filterMode.value = true
-    return books.value.filter((book) => {
-      return book.tenSach.toLowerCase().includes(searchValue.value.toLowerCase()) && (publisherValue.value === 'all' || book.maNXB.toLowerCase().includes(publisherValue.value.toLowerCase())) && (stockState.value === 'available' || remainingCheck(book.conLai) === stockState.value)
-    })
-  }
-})
-
-const bookData = reactive({
-  maSach: '',
-  tenSach: '',
-  tacGia: '',
-  donGia: '',
-  soQuyen: '',
-  soQuyenConLai: '',
-  namXuatBan: '',
-  maNXB: '',
-  moTa: '',
-  anhBia: null,
-  anhChiTiet: [],
-  theLoai: []
-})
-
-const newPublisher = ref(null)
 
 const handleSubmit = (bookData) => {
-  const formData = new FormData()
-  Object.keys(bookData).forEach((key) => {
-    if (key === 'anhChiTiet' && bookData.anhChiTiet) {
-      for (let i = 0; i < bookData.anhChiTiet.length; i++) {
-        formData.append('bookImgs', bookData.anhChiTiet[i])
-      }
-    } else if (key === 'anhBia') {
-      formData.append('bookImg', bookData.anhBia)
-    } else if (key === 'theLoai') {
-      formData.append('theLoai', JSON.stringify(bookData[key]))
-    } else if (key === 'soQuyenConLai') {
-      formData.append('soQuyenConLai', bookData.soQuyen)
-    } else {
-      formData.append(key, bookData[key])
-    }
-  })
-  addNewBookAPI(formData).then((data) => {
-    newPublisher.value = publishers.value.find((publisher) => publisher.maNXB === data.maNXB)
-    books.value.push({
-      ...data,
-      nhaXuatBan: {
-        ...newPublisher.value
-      }
-    })
-    if (currentPage.value === pageSum.value && booksAfter.length < rowsPerPage.value) {
-      booksAfter.push(data)
-    }
-    toast.success('Thêm sách thành công!', {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
-    modal.value.close()
-  }).catch((err) => {
-    console.log(err)
-  })
+  modal.value.close()
+  addBook(bookData)
 }
 
 const closeModal = () => {
@@ -154,23 +82,15 @@ const closeModal = () => {
 
 const handleDeleteBook = (maSach) => {
   deleteBookAPI(maSach).then(() => {
-    toast.success("Xóa sách thành công", {
-      autoClose: 3000,
-      position: toast.POSITION.BOTTOM_LEFT,
-    })
-    books.value = books.value.filter((book) => {
-      return book._id !== maSach
-    })
+    // deleteBook(maSach)
+    // if (books.value.length === 0 && currentPage.value > 1) {
+    //   currentPage.value--
+    //   router.replace({ query: { page: currentPage.value } })
+    // }
+    fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: publisherValue.value, stockState: stockState.value })
+    toast.success("Xóa sách thành công")
   })
 }
-
-// const handleUpdateBook = (book, newPublisher) => {
-//   const targetBook = books.value.find((b) => b._id === book._id)
-//   for (let key in book) {
-//     targetBook[key] = book[key]
-//   }
-//   targetBook.nhaXuatBan = newPublisher
-// }
 
 const dialog = createConfirmDialog(ModalDialog)
 
@@ -188,7 +108,6 @@ const confirmDelete = async (maSach) => {
       <AddBookModal
         @submit="handleSubmit"
         @closeModal="closeModal"
-        :bookData="bookData"
         :publishers="publishers"
       />
       <form method="dialog" class="modal-backdrop">
@@ -208,7 +127,7 @@ const confirmDelete = async (maSach) => {
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Theo NXB</legend>
           <select v-model="publisherValue" class="select">
-            <option value="all">Tất cả</option>
+            <option value="">Tất cả</option>
             <option v-for="publisher in publishers" :value="publisher.maNXB">{{ publisher.tenNXB }}</option>
           </select>
         </fieldset>
@@ -216,7 +135,7 @@ const confirmDelete = async (maSach) => {
           <legend class="fieldset-legend">Trạng thái</legend>
           <select v-model="stockState" class="select">
             <option value="available">Có sẵn</option>
-            <option value="out-of-stock">Đã mượn hết</option>
+            <option value="unavailable">Đã mượn hết</option>
           </select>
         </fieldset>
         <button @click="modal.showModal()" class="btn btn-primary absolute right-2 bottom-2">
@@ -225,7 +144,7 @@ const confirmDelete = async (maSach) => {
         </button>
       </div>
       <div class="overflow-x-auto px-2">
-        <table class="table bg-base-200">
+        <table class="table bg-base-200 overflow-hidden">
           <thead>
             <tr>
               <th>Mã sách</th>
@@ -240,7 +159,7 @@ const confirmDelete = async (maSach) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(book) in booksAfter" class="hover:bg-base-300">
+            <tr v-for="(book) in books" class="hover:bg-base-300">
               <td class="py-1">{{ book.maSach }}</td>
               <td class="max-w-[230px] flex items-center gap-4 py-1">
                   <div class="w-12 h-18 rounded overflow-hidden">
@@ -284,7 +203,7 @@ const confirmDelete = async (maSach) => {
               <td class="py-1">
                 <div :class="['badge', book.soQuyen ? 'badge-warning' : 'badge-error' ]">{{ book.soQuyenConLai }}</div>
               </td>
-              <td class="py-1">{{ book.nhaXuatBan?.tenNXB || newPublisher?.tenNXB }}</td>
+              <td class="py-1">{{ book.nhaXuatBan?.tenNXB }}</td>
               <td class="py-1 space-x-1">
                 <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-circle">
                   <font-awesome-icon icon="fa-solid fa-trash" />
@@ -299,11 +218,13 @@ const confirmDelete = async (maSach) => {
           </tbody>
         </table>
       </div>
-      <div v-if="!filterMode" class="flex justify-end mt-1 px-2">
+      <div class="flex justify-center mt-1 px-2">
         <div class="join">
           <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
-          <button v-for="n in pageSum" @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
-          <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === pageSum || pageSum === 0 }]">»</button>
+          <RouterLink v-for="n in totalPages" :to="{ query: { page: n }, replace: true }">
+            <button @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
+          </RouterLink>
+          <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === totalPages || totalPages === 0 }]">»</button>
         </div>
       </div>
     </div>

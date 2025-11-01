@@ -1,7 +1,6 @@
 <script setup>
-import { getAllRequests, fetchAllUsersAPI } from '@/apis'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useBookStore } from '@/stores/bookStore'
+import { getAllRequests, fetchAllUsersAPI, fetchBooksAPI } from '@/apis'
+import { computed, onMounted, ref } from 'vue'
 import { REQUEST_STATUS } from '@/utils/constants'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
@@ -53,7 +52,6 @@ const chartOptions = {
   responsive: true
 }
 
-const bookStore = useBookStore()
 const books = ref([])
 
 const totalBooks = computed(() => {
@@ -72,6 +70,9 @@ const totalBorrowing = ref(0)
 const users = ref([])
 const requests = ref([])
 onMounted(() => {
+  fetchBooksAPI({ limit: 1000 }).then((data) => {
+    books.value = data.books
+  })
   getAllRequests().then((data) => {
     totalBorrowing.value = data.map((req) => req.trangThai !== REQUEST_STATUS.PENDING).length
     requests.value = data
@@ -80,10 +81,6 @@ onMounted(() => {
     users.value = data
   })
 })
-
-watch(() => bookStore.books.length, () => {
-  books.value = [...bookStore.books]
-}, { immediate: true })
 
 const statisticType = ref('book')
 </script>

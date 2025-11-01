@@ -5,9 +5,12 @@ import { formatDate } from '../utils/formatters'
 import { REQUEST_STATUS } from '@/utils/constants'
 import { useUserStore } from '@/stores/userStore'
 import Navbar from '@/components/Navbar.vue'
-import { toast } from 'vue3-toastify'
+// import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
+
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
 
 const userStore = useUserStore()
 const requests = ref([])

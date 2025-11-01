@@ -5,6 +5,9 @@ import { createConfirmDialog } from 'vuejs-confirm-dialog'
 import ModalDialog from './ModalDialog.vue'
 import { useRouter } from 'vue-router'
 
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
+
 const router = useRouter()
 const adminStore = useAdminStore()
 const { logoutAdminAPI } = adminStore
@@ -16,12 +19,13 @@ const confirmLogout = async () => {
 
   if(isCanceled) return
   await logoutAdminAPI()
+  toast.success('Đăng xuất thành công')
   router.push('/login')
 }
 </script>
 <template>
   <div class="navbar justify-between px-5 py-3 p-0 bg-base-100 text-text-primary text-[13px] font-[500]">
-    <div class="badge badge-soft badge-primary">Nhân viên</div>
+    <div class="badge badge-soft badge-primary">{{ adminStore.currentActiveAdmin?.chucVu === 'staff' ? 'Nhân viên' : 'Quản trị viên' }}</div>
     <div>
       <ModeSwitcher />
       <button @click="confirmLogout" class="btn btn-ghost ml-2">Đăng xuất</button>

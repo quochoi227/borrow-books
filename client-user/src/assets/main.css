@@ -8,22 +8,6 @@
   font-family: Readex Pro;
 }
 
-/* .input,
-.select,
-.textarea {
-  outline-color: var(--color-sky-500);
-  outline-offset: 0;
-}
-
-.input:focus,
-.input:focus-within,
-.select:focus,
-.select:focus-within,
-.textarea:focus,
-.textarea:focus-within {
-  border-color: transparent;
-} */
-
 .auth-appear {
   animation: appear 0.2s ease-in-out;
 }

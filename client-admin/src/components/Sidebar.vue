@@ -1,12 +1,18 @@
 <script setup>
-import book_icon from '@/assets/images/book-svgrepo-com.svg'
-import { computed, ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
+import { permissions } from '@/config/rbacConfig'
+import { usePermission } from '@/composables/usePermission'
+import { useAdminStore } from '@/stores/adminStore'
+
+const adminStore = useAdminStore()
+const { chucVu } = toRefs(adminStore.currentActiveAdmin)
+const { hasPermission } = usePermission(chucVu?.value)
 const route = useRoute()
 
 // const sidebarItemClassess = 'gap-3 text-[16px] text-gray-600'
 const sidebarItemClassess = computed(() => {
-  return `text-[16px] gap-3 text-gray-500 flex ${isOpen.value ? 'justify-start' : 'justify-center'}`
+  return `text-[16px] gap-3 py-3 text-gray-500 flex ${isOpen.value ? 'justify-start' : 'justify-center'}`
 })
 // const activeItemClasses = 'menu-active'
 const activeItemClasses = 'menu-active'
@@ -24,7 +30,7 @@ const isOpen = ref(true)
     </div>
     <div class="mt-4">
       <ul class="menu gap-1 w-full cursor-pointer">
-        <router-link v-if="isOpen" to="/dashboard">
+        <router-link v-if="hasPermission(permissions.VIEW_DASHBOARD) && isOpen" to="/dashboard">
           <li>
             <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/dashboard' }]">
               <font-awesome-icon icon="fa-solid fa-chart-line" class="text-xl" />
@@ -32,7 +38,7 @@ const isOpen = ref(true)
             </span>
           </li>
         </router-link>
-        <div v-else data-tip="Dashboard" class="tooltip tooltip-right">
+        <div v-else-if="hasPermission(permissions.VIEW_DASHBOARD)" data-tip="Dashboard" class="tooltip tooltip-right">
           <router-link to="/dashboard">
             <li>
               <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/dashboard' }]">
@@ -41,7 +47,7 @@ const isOpen = ref(true)
             </li>
           </router-link>
         </div>
-        <router-link v-if="isOpen" to="/book-management">
+        <router-link v-if="hasPermission(permissions.VIEW_BOOKS) && isOpen" to="/book-management">
           <li>
             <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/book-management' }]">
               <font-awesome-icon icon="fa-solid fa-book" class="text-xl" />
@@ -49,7 +55,7 @@ const isOpen = ref(true)
             </span>
           </li>
         </router-link>
-        <div v-else data-tip="Quản lý sách" class="tooltip tooltip-right">
+        <div v-else-if="hasPermission(permissions.VIEW_BOOKS)" data-tip="Quản lý sách" class="tooltip tooltip-right">
           <router-link to="/book-management">
             <li>
               <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/book-management' }]">
@@ -58,7 +64,7 @@ const isOpen = ref(true)
             </li>
           </router-link>
         </div>
-        <router-link v-if="isOpen" to="/borrowing-management">
+        <router-link v-if="hasPermission(permissions.VIEW_REQUESTS) && isOpen" to="/borrowing-management">
           <li>
             <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/borrowing-management' }]">
               <font-awesome-icon icon="fa-solid fa-hand" class="text-xl" />
@@ -66,7 +72,7 @@ const isOpen = ref(true)
             </span>
           </li>
         </router-link>
-        <div v-else data-tip="Quản lý mượn sách" class="tooltip tooltip-right">
+        <div v-else-if="hasPermission(permissions.VIEW_REQUESTS)" data-tip="Quản lý mượn sách" class="tooltip tooltip-right">
           <router-link to="/borrowing-management">
             <li>
               <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/borrowing-management' }]">
@@ -75,7 +81,7 @@ const isOpen = ref(true)
             </li>
           </router-link>
         </div>
-        <router-link v-if="isOpen" to="/publishers">
+        <router-link v-if="hasPermission(permissions.VIEW_PUBLISHERS) && isOpen" to="/publishers">
           <li>
             <span :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/publishers' }]">
               <font-awesome-icon icon="fa-solid fa-house-user" class="text-xl" />
@@ -83,7 +89,7 @@ const isOpen = ref(true)
             </span>
           </li>
         </router-link>
-        <div v-else data-tip="Nhà xuất bản" class="tooltip tooltip-right">
+        <div v-else-if="hasPermission(permissions.VIEW_PUBLISHERS)" data-tip="Nhà xuất bản" class="tooltip tooltip-right">
           <router-link to="/publishers">
             <li>
               <span class="py-3" :class="[sidebarItemClassess, { [activeItemClasses]: route.path === '/publishers' }]">

@@ -4,16 +4,24 @@ import { reactive } from 'vue'
 import { Form, Field, ErrorMessage } from 'vee-validate'
 import router from '@/router'
 
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
+
 const registerInfo = reactive({
   hoVaTen: '',
   diaChi: '',
   dienThoai: '',
+  chucVu: 'admin',
   matKhau: '',
 })
 
 const handleSubmit = (values) => {
-  adminRegisterAPI(values).then(() => {
-    router.push(`/login?registeredPhone=${registerInfo.dienThoai}`)
+  adminRegisterAPI({
+    ...values,
+    chucVu: registerInfo.chucVu
+  }).then(() => {
+    toast.success('Đăng ký tài khoản thành công!')
+    router.push('/login')
   })
 }
 
@@ -73,6 +81,13 @@ const validatePasswordComfirmation = (value) => {
       <legend class="fieldset-legend">Số điện thoại</legend>
       <Field name="dienThoai" :rules="validatePhoneNumber" :validateOnInput="true" v-model="registerInfo.dienThoai" type="text" class="input w-full" placeholder="Type here" />
       <ErrorMessage class="text-red-500" name="dienThoai" />
+    </fieldset>
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend">Chức vụ</legend>
+      <select class="select w-full" v-model="registerInfo.chucVu">
+        <option value="admin">Quản trị viên</option>
+        <option value="staff">Nhân viên</option>
+      </select>
     </fieldset>
     <fieldset class="fieldset">
       <legend class="fieldset-legend">Đặt mật khẩu</legend>
