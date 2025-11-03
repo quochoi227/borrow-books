@@ -28,7 +28,12 @@ const router = createRouter({
           component: () => import('@/pages/BookDetails.vue'),
         },
         {
-          path: '/books',
+          path: 'borrowing-history',
+          name: 'borrowing-history',
+          component: () => import('@/pages/BorrowingHistory.vue'),
+        },
+        {
+          path: 'books',
           name: 'books',
           component: AllBooks
         }
@@ -45,11 +50,6 @@ const router = createRouter({
     //     }
     //   ]
     // },
-    {
-      path: '/borrowing-history',
-      name: 'borrowing-history',
-      component: () => import('@/pages/BorrowingHistory.vue'),
-    },
     {
       path: '/register',
       name: 'register',

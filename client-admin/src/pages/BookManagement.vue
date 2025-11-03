@@ -116,29 +116,38 @@ const confirmDelete = async (maSach) => {
     </dialog>
     <!-- name of each tab group should be unique -->
     <div>
-      <div class="flex gap-2 p-2 rounded-lg relative">
-        <fieldset class="fieldset">
+      <div class="flex gap-2 p-2 rounded-lg items-end">
+        <fieldset class="fieldset py-0">
           <legend class="fieldset-legend">Tìm kiếm</legend>
           <label class="input">
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
             <input @input="handleInputChange" type="text" placeholder="Tìm theo tên sách" />
           </label>
         </fieldset>
-        <fieldset class="fieldset">
+        <fieldset class="fieldset py-0">
           <legend class="fieldset-legend">Theo NXB</legend>
           <select v-model="publisherValue" class="select">
             <option value="">Tất cả</option>
             <option v-for="publisher in publishers" :value="publisher.maNXB">{{ publisher.tenNXB }}</option>
           </select>
         </fieldset>
-        <fieldset class="fieldset">
+        <fieldset class="fieldset py-0">
           <legend class="fieldset-legend">Trạng thái</legend>
           <select v-model="stockState" class="select">
             <option value="available">Có sẵn</option>
             <option value="unavailable">Đã mượn hết</option>
           </select>
         </fieldset>
-        <button @click="modal.showModal()" class="btn btn-primary absolute right-2 bottom-2">
+        <div class="flex-1 flex justify-end mt-1">
+          <div class="join">
+            <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
+            <RouterLink v-for="n in totalPages" :to="{ query: { page: n }, replace: true }">
+              <button @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
+            </RouterLink>
+            <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === totalPages || totalPages === 0 }]">»</button>
+          </div>
+        </div>
+        <button @click="modal.showModal()" class="btn btn-primary">
           <font-awesome-icon icon="fa-solid fa-plus" />
           Thêm sách
         </button>
@@ -205,11 +214,11 @@ const confirmDelete = async (maSach) => {
               </td>
               <td class="py-1">{{ book.nhaXuatBan?.tenNXB }}</td>
               <td class="py-1 space-x-1">
-                <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-circle">
+                <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-square">
                   <font-awesome-icon icon="fa-solid fa-trash" />
                 </button>
                 <RouterLink :to="'/books/' + book._id">
-                  <button class="btn btn-sm btn-info btn-circle">
+                  <button class="btn btn-sm btn-info btn-square">
                     <font-awesome-icon icon="fa-solid fa-pen-to-square" />
                   </button>
                 </RouterLink>
@@ -217,15 +226,6 @@ const confirmDelete = async (maSach) => {
             </tr>
           </tbody>
         </table>
-      </div>
-      <div class="flex justify-center mt-1 px-2">
-        <div class="join">
-          <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
-          <RouterLink v-for="n in totalPages" :to="{ query: { page: n }, replace: true }">
-            <button @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
-          </RouterLink>
-          <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === totalPages || totalPages === 0 }]">»</button>
-        </div>
       </div>
     </div>
   </div>

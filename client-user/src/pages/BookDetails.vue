@@ -88,7 +88,8 @@ const handleSubmit = () => {
 }
 </script>
 <template>
-  <div style="height: calc(100vh - 68px); overflow-y: auto;" class="bg-base-200 pt-4">
+  <div class="h-[68px] bg-base-200"></div>
+  <div class="bg-base-200 pt-4">
     <div class="flex gap-4 max-w-[1200px] mx-auto rounded-lg">
       <div class="w-5/12 flex flex-col gap-4">
         <div class="flex flex-col items-center bg-base-100 p-4 rounded-lg h-fit">

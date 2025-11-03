@@ -1,14 +1,11 @@
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { reactive } from 'vue'
 import { Form, Field } from 'vee-validate'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 // import { toast } from 'vue3-toastify'
 
 import { useToast } from '@/composables/useToast'
-const toast = useToast()
-
-const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -20,25 +17,13 @@ const registerInfo = reactive({
 })
 
 const handleSubmit = (values) => {
-  // toast.promise(
-  //   loginUserAPI(values),
-  //   { pending: 'Đang đăng nhập' }
-  // ).then(() => {
-  //   router.push('/home')
-  // })
   loginUserAPI(values).then(() => {
     router.push('/home')
   })
 }
-
-// onMounted(() => {
-//   if (route.query.registeredPhone) {
-//     toast.success('Đăng ký tài khoản thành công!')
-//   }
-// })
 </script>
 <template>
-  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12">
+  <Form @submit="handleSubmit" class="auth-appear rounded-lg p-6 grid grid-cols-12 shadow-lg bg-white">
     <div class="col-span-12 mx-auto">
       <RouterLink to="/">
         <button type="button" class="btn text-2xl font-[K2D] font-bold text-primary">B</button>

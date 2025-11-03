@@ -75,6 +75,11 @@ export const getRequestsByIdAPI = async (userId) => {
   return response.data
 }
 
+export const updateRequestAPI = async (requestId, data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/requests/${requestId}`, data)
+  return response.data
+}
+
 export const addNewRequestAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/requests`, data)
   return response.data

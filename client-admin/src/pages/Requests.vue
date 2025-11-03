@@ -7,6 +7,8 @@ import { REQUEST_STATUS } from '@/utils/constants'
 
 const bookStore = useBookStore()
 
+const hard = ref(0)
+
 const requests = ref([])
 
 const waiting = ref(true)
@@ -46,14 +48,13 @@ const updateRequest = (requestId, status, bookId) => {
     maSach: bookId
   }).then((data) => {
     const target = requests.value.find((req) => req._id === requestId)
-    for (let key in data) {
-      target[key] = data[key]
-    }
+    Object.assign(target, data)
     if (status === REQUEST_STATUS.ACCEPT) {
       bookStore.decrementBookCopyCount(bookId)
     } else if (status === REQUEST_STATUS.RETURNED) {
       bookStore.incrementBookCopyCount(bookId)
     }
+    hard.value++
   })
 }
 </script>
@@ -99,9 +100,9 @@ const updateRequest = (requestId, status, bookId) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(req, index) in requestsFiltered" :key="req.id" class="hover:bg-base-300">
+          <tr v-for="(req, index) in requestsFiltered" :key="req._id" class="hover:bg-base-300">
             <td>{{ index + 1 }}</td>
-            <td class="whitespace-nowrap">{{ req.docGia.hoLot + ' ' + req.docGia.ten }}</td>
+            <td class="whitespace-nowrap">{{ req.docGia?.hoLot + ' ' + req.docGia?.ten }}</td>
             <td>{{ req.sach.maSach }}</td>
             <td
               style="
@@ -127,27 +128,27 @@ const updateRequest = (requestId, status, bookId) => {
             <td>
               <div class="flex gap-1">
                 <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Chấp nhận">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.ACCEPT, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-success">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.ACCEPT, req.maSach)" class="btn btn-square btn-xs btn-success">
                     <font-awesome-icon icon="fa-solid fa-check" />
                   </button>
                 </div>
                 <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Từ chối">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECTED, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-error">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECTED, req.maSach)" class="btn btn-square btn-xs btn-error">
                     <font-awesome-icon icon="fa-solid fa-xmark" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === REQUEST_STATUS.REJECT" class="tooltip" data-tip="Hoàn tác">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-warning">
+                <div v-if="req.trangThai === REQUEST_STATUS.REJECTED" class="tooltip" data-tip="Hoàn tác">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)" class="btn btn-square btn-xs btn-warning">
                     <font-awesome-icon icon="fa-solid fa-rotate-left" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === REQUEST_STATUS.ACCEPT" class="tooltip" data-tip="Đã trả sách">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.RETURNED, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-success">
+                <div v-if="req.trangThai === 'đang mượn'" class="tooltip" data-tip="Đã trả sách">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.RETURNED, req.maSach)" class="btn btn-square btn-xs btn-success">
                     <font-awesome-icon icon="fa-solid fa-person-walking-arrow-loop-left" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === REQUEST_STATUS.ACCEPT" class="tooltip" data-tip="Làm mất">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.LOSTED, req.maSach)" class="interceptor-loading btn btn-circle btn-xs btn-error">
+                <div v-if="req.trangThai === 'đang mượn'" class="tooltip" data-tip="Làm mất">
+                  <button @click="updateRequest(req._id, REQUEST_STATUS.LOSTED, req.maSach)" class="btn btn-square btn-xs btn-error">
                     <font-awesome-icon icon="fa-solid fa-person-circle-exclamation" />
                   </button>
                 </div>

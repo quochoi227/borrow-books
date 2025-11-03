@@ -38,6 +38,7 @@ const onSelect = (item) => {
 
 </script>
 <template>
+  <div class="h-[68px] w-full"></div>
   <div class="w-full max-w-[1200px] mx-auto">
     <div class="flex w-full items-center justify-between">
       <div class="join">

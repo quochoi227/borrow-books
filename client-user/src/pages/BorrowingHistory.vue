@@ -1,10 +1,9 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { getRequestsByIdAPI, deleteRequestAPI } from '@/apis'
+import { getRequestsByIdAPI, deleteRequestAPI, updateRequestAPI } from '@/apis'
 import { formatDate } from '../utils/formatters'
 import { REQUEST_STATUS } from '@/utils/constants'
 import { useUserStore } from '@/stores/userStore'
-import Navbar from '@/components/Navbar.vue'
 // import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
@@ -55,6 +54,16 @@ const confirmDelete = async (requestId) => {
   deleteRequest(requestId)
 }
 
+const updateRequest = (requestId, status, bookId) => {
+  updateRequestAPI(requestId, {
+    trangThai: status,
+    maSach: bookId
+  }).then((data) => {
+    const target = requests.value.find((req) => req._id === requestId)
+    Object.assign(target, data)
+  })
+}
+
 onMounted(() => {
   getRequestsByIdAPI(userStore.currentActiveUser.maDocGia).then((data) => {
     requests.value = data
@@ -62,7 +71,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <Navbar />
+  <div class="h-[68px] w-full"></div>
   <div class="px-2 py-6">
     <div class="flex justify-center gap-4">
       <label class="label">
@@ -86,7 +95,7 @@ onMounted(() => {
         Đã bị mất
       </label>
     </div>
-    <table class="table mt-4">
+    <table class="table mt-4 bg-base-200">
       <thead>
         <tr>
           <th>Sách</th>
@@ -122,6 +131,10 @@ onMounted(() => {
             <button v-if="req.trangThai === 'chờ duyệt'" @click="confirmDelete(req._id)" class="btn btn-xs btn-warning">
               <font-awesome-icon icon="fa-solid fa-rotate-left" />
               Thu hồi
+            </button>
+            <button v-if="req.trangThai === 'đang mượn'" @click="updateRequest(req._id, REQUEST_STATUS.LOSTED, req.maSach)" class="btn btn-xs btn-error">
+              <font-awesome-icon icon="fa-solid fa-person-circle-exclamation" />
+              Làm mất
             </button>
           </td>
         </tr>

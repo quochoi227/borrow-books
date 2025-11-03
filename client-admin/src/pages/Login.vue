@@ -20,26 +20,14 @@ const registerInfo = reactive({
 })
 
 const handleSubmit = (values) => {
-  // toast.promise(
-  //   loginAdminAPI(values),
-  //   { pending: 'Đang đăng nhập' }
-  // ).then(() => {
-  //   router.push('/')
-  // })
   loginAdminAPI(values).then(() => {
     toast.success('Đăng nhập thành công!')
     router.push('/')
   })
 }
-
-// onMounted(() => {
-//   if (route.query.registeredPhone) {
-//     toast.success('Đăng ký tài khoản thành công!')
-//   }
-// })
 </script>
 <template>
-  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-base-100 p-6 grid grid-cols-12">
+  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-white p-6 grid grid-cols-12 shadow-lg">
     <div class="col-span-12">
       <h1 class="text-center text-2xl font-semibold">Đăng nhập</h1>
     </div>
