@@ -5,6 +5,7 @@
       :key="toast.id"
       class="alert shadow-lg"
       :class="toastClass(toast.type)"
+      @click="removeToast(toast.id)"
     >
       <svg v-if="toast.type === 'success'"xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -22,13 +23,18 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const toasts = ref([])
 
+let timeoutId
+
 const addToast = (toast) => {
   toasts.value.push(toast)
-  setTimeout(() => removeToast(toast.id), toast.duration || 3000)
+  timeoutId = setTimeout(() => removeToast(toast.id), toast.duration || 3000)
 }
 
 const removeToast = (id) => {
   toasts.value = toasts.value.filter(t => t.id !== id)
+  if (toasts.value.length === 0) {
+    clearTimeout(timeoutId)
+  }
 }
 
 // Lắng nghe event global

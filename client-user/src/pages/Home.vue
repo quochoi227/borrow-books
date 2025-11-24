@@ -45,9 +45,11 @@ onMounted(() => {
   </div>
   <div class="relative">
     <!-- Background Pattern -->
-    <div class="absolute inset-0">
+    <div class="absolute inset-0 -z-10">
       <div class="relative h-full w-full [&>div]:absolute [&>div]:bottom-0 [&>div]:right-0 [&>div]:z-[-2] [&>div]:h-full [&>div]:w-full [&>div]:bg-gradient-to-b [&>div]:from-blue-200 [&>div]:to-white">
-      <div></div>
+      <div>
+        
+      </div>
       </div>
     </div>
     

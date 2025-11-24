@@ -109,7 +109,7 @@ const handleSubmit = () => {
       </form>
     </dialog>
     <!-- name of each tab group should be unique -->
-    <div class="m-2 mt-3 p-2 bg-white">
+    <div class="m-2 mt-3 p-2">
       <div class="p-2 flex gap-2 relative">
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Tìm kiếm</legend>
@@ -124,7 +124,7 @@ const handleSubmit = () => {
         </button>
       </div>
       <div class="overflow-auto px-2 h-[460px]">
-        <table class="table bg-base-200">
+        <table class="table bg-base-200 overflow-hidden">
           <thead>
             <tr>
               <th>Mã NXB</th>
@@ -170,9 +170,6 @@ const handleSubmit = () => {
                 <button class="btn btn-error btn-sm btn-circle">
                   <font-awesome-icon icon="fa-solid fa-trash" />
                 </button>
-                <button class="btn btn-sm btn-info btn-circle">
-                  <font-awesome-icon icon="fa-solid fa-list-ul" />
-                </button>
               </td>
             </tr>
           </tbody>
@@ -181,7 +178,7 @@ const handleSubmit = () => {
       <div v-if="!filterMode" class="flex justify-end mt-1 px-2">
         <div class="join">
           <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
-          <button v-for="n in pageSum" @click="() => currentPage = n" :class="['join-item btn', { 'bg-main text-white': currentPage === n }]">{{ n }}</button>
+          <button v-for="n in pageSum" @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
           <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === pageSum }]">»</button>
         </div>
       </div>

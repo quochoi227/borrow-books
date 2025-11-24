@@ -3,7 +3,6 @@ import { useRoute, useRouter } from 'vue-router'
 import Login from './Login.vue'
 import Register from './Register.vue'
 import { useAdminStore } from '@/stores/adminStore'
-import auth_bg from '@/assets/images/login_register_bg.jpg'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,9 +13,9 @@ if (adminStore.currentActiveAdmin) {
 }
 </script>
 <template>
-  <div className="min-h-screen w-full bg-[#020617] relative">
+  <div class="relative min-h-screen w-full bg-[#020617]">
     <div
-      className="absolute inset-0 z-0"
+      class="absolute inset-0 z-0"
       :style="{
         background: '#020617',
         backgroundImage: `
@@ -27,7 +26,7 @@ if (adminStore.currentActiveAdmin) {
         backgroundSize: '32px 32px, 32px 32px, 100% 100%'
       }"
     >
-      <div class="w-full h-screen flex items-center justify-center">
+      <div class="flex h-screen w-full items-center justify-center">
         <div class="min-w-lg">
           <Login v-if="route.path.includes('/login')" />
           <Register v-if="route.path.includes('/register')" />

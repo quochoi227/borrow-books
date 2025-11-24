@@ -28,14 +28,19 @@ const statusMap = {
   'quá hạn': 'badge-error',
   'bị mất': 'badge-error'
 }
+
+const requestStatus = ref(REQUEST_STATUS.ACCEPT)
+
 const requestsFiltered = computed(() => {
-  return requests.value.filter((req) => {
-    return (waiting.value && req.trangThai === 'chờ duyệt')
-      || (borrowing.value && req.trangThai === 'đang mượn')
-      || (returned.value && (req.trangThai === 'đã trả' || req.trangThai === 'quá hạn'))
-      || (rejected.value && req.trangThai === 'đã từ chối')
-      || (losted.value && req.trangThai === 'bị mất')
-  })
+  // return requests.value.filter((req) => {
+  //   return (waiting.value && req.trangThai === 'chờ duyệt')
+  //     || (borrowing.value && req.trangThai === 'đang mượn')
+  //     || (returned.value && (req.trangThai === 'đã trả' || req.trangThai === 'quá hạn'))
+  //     || (rejected.value && req.trangThai === 'đã từ chối')
+  //     || (losted.value && req.trangThai === 'bị mất')
+  // })
+  if (requestStatus.value === 'all') return [...requests.value]
+  return requests.value.filter((req) => req.trangThai === requestStatus.value)
 })
 
 const deleteRequest = (requestId) => {
@@ -73,7 +78,7 @@ onMounted(() => {
 <template>
   <div class="h-[68px] w-full"></div>
   <div class="px-2 py-6">
-    <div class="flex justify-center gap-4">
+    <!-- <div class="flex justify-center gap-4">
       <label class="label">
         <input type="checkbox" v-model="waiting" class="checkbox" />
         Chờ duyệt
@@ -94,8 +99,16 @@ onMounted(() => {
         <input type="checkbox" v-model="losted" class="checkbox" />
         Đã bị mất
       </label>
+    </div> -->
+    <div class="tabs tabs-box justify-center">
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" value="all" class="tab" aria-label="Tất cả" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.PENDING" class="tab" aria-label="Chờ duyệt" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.ACCEPT" class="tab" aria-label="Đang mượn" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.RETURNED" class="tab" aria-label="Đã trả" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.REJECTED" class="tab" aria-label="Đã bị từ chối" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.LOSTED" class="tab" aria-label="Đã làm mất" />
     </div>
-    <table class="table mt-4 bg-base-200">
+    <table class="table mt-2 bg-base-200">
       <thead>
         <tr>
           <th>Sách</th>
@@ -122,8 +135,7 @@ onMounted(() => {
           <td>{{ req.hanTra ? formatDate(req.hanTra) : '' }}</td>
           <td>
             <div v-if="req.hanTra && Date.now() > new Date(req.hanTra)" class="badge badge-error">quá hạn</div>
-            <div v-else-if="req.hanTra && !req.ngayTra" class="badge badge-error">Còn {{ Math.ceil((new Date(req.hanTra) - new Date(Date.now())) / 86400000) }} ngày</div>
-            <span v-else></span>
+            <div v-else-if="req.hanTra && !req.ngayTra && req.trangThai !== REQUEST_STATUS.LOSTED" class="badge badge-error">Còn {{ Math.ceil((new Date(req.hanTra) - new Date(Date.now())) / 86400000) }} ngày</div>
           </td>
           <td>{{ req.ngayTra ? formatDate(req.ngayTra) : '' }}</td>
           <td><span :class="['badge', statusMap[req.trangThai]]">{{ req.trangThai }}</span></td>

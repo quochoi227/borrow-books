@@ -125,7 +125,7 @@ const statisticType = ref('book')
     </div>
     <!-- name of each tab group should be unique -->
     <!-- name of each tab group should be unique -->
-    <div class="flex justify-center gap-4 mt-6">
+    <!-- <div class="flex justify-center gap-4 mt-6">
       <label class="label">
         <input type="radio" value="book" v-model="statisticType" class="radio" />
         Theo sách
@@ -134,6 +134,11 @@ const statisticType = ref('book')
         <input type="radio" value="reader" v-model="statisticType" class="radio" />
         Theo độc giả
       </label>
+    </div> -->
+    <!-- name of each tab group should be unique -->
+    <div class="tabs tabs-box justify-center mt-2">
+      <input type="radio" value="book" v-model="statisticType" name="my_tabs_1" class="tab" aria-label="Theo sách" />
+      <input type="radio" value="reader" v-model="statisticType" name="my_tabs_1" class="tab" aria-label="Theo độc giả" />
     </div>
     <div class="mt-4">
       <Bar

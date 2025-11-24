@@ -89,3 +89,9 @@ export const deleteRequestAPI = async (requestId) => {
   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/requests/${requestId}`)
   return response.data
 }
+
+// AI
+export const generateTextAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/ai/generate-text`, data)
+  return response.data
+}

@@ -17,6 +17,8 @@ const returned = ref(false)
 const rejected = ref(false)
 const losted = ref(false)
 
+const requestStatus = ref(REQUEST_STATUS.PENDING)
+
 const statusMap = {
   'chờ duyệt': 'badge-warning',
   'đã từ chối': 'badge-error',
@@ -27,13 +29,15 @@ const statusMap = {
 }
 
 const requestsFiltered = computed(() => {
-  return requests.value.filter((req) => {
-    return (waiting.value && req.trangThai === REQUEST_STATUS.PENDING)
-      || (borrowing.value && req.trangThai === REQUEST_STATUS.ACCEPT)
-      || (returned.value && (req.trangThai === REQUEST_STATUS.RETURNED || req.trangThai === REQUEST_STATUS.LATE))
-      || (rejected.value && req.trangThai === REQUEST_STATUS.REJECTED)
-      || (losted.value && req.trangThai === REQUEST_STATUS.LOSTED)
-  })
+  // return requests.value.filter((req) => {
+  //   return (waiting.value && req.trangThai === REQUEST_STATUS.PENDING)
+  //     || (borrowing.value && req.trangThai === REQUEST_STATUS.ACCEPT)
+  //     || (returned.value && (req.trangThai === REQUEST_STATUS.RETURNED || req.trangThai === REQUEST_STATUS.LATE))
+  //     || (rejected.value && req.trangThai === REQUEST_STATUS.REJECTED)
+  //     || (losted.value && req.trangThai === REQUEST_STATUS.LOSTED)
+  // })
+  if (requestStatus.value === 'all') return [...requests.value]
+  return requests.value.filter((req) => req.trangThai === requestStatus.value)
 })
 
 onMounted(() => {
@@ -61,7 +65,7 @@ const updateRequest = (requestId, status, bookId) => {
 <template>
   <div class="px-2 py-6">
     <h2 class="text-xl font-semibold mb-4 text-center">Yêu cầu mượn sách</h2>
-    <div class="flex justify-center gap-4">
+    <!-- <div class="flex justify-center gap-4">
       <label class="label">
         <input type="checkbox" v-model="waiting" class="checkbox" />
         Chờ duyệt
@@ -82,9 +86,18 @@ const updateRequest = (requestId, status, bookId) => {
         <input type="checkbox" v-model="losted" class="checkbox" />
         Đã bị mất
       </label>
+    </div> -->
+    <!-- name of each tab group should be unique -->
+    <div class="tabs tabs-box justify-center">
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" value="all" class="tab" aria-label="Tất cả" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.PENDING" class="tab" aria-label="Chờ duyệt" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.ACCEPT" class="tab" aria-label="Đang mượn" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.RETURNED" class="tab" aria-label="Đã trả" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.REJECTED" class="tab" aria-label="Đã bị từ chối" />
+      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.LOSTED" class="tab" aria-label="Đã làm mất" />
     </div>
-    <div class="w-full overflow-x-auto mt-4">
-      <table class="table bg-base-200">
+    <div class="w-full overflow-x-auto mt-2">
+      <table class="table bg-base-200 overflow-hidden">
         <thead>
           <tr>
             <th>TT</th>

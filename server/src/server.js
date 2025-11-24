@@ -11,7 +11,7 @@ import path from 'path'
 const app = express()
 
 // Connect database
-mongoose.connect(env.MONGODB_URI_LOCAL)
+mongoose.connect(env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected successfully.')
   })

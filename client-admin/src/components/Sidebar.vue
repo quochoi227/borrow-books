@@ -19,7 +19,7 @@ const activeItemClasses = 'menu-active'
 const isOpen = ref(true)
 </script>
 <template>
-  <div :style="{ width: isOpen ? '270px' : '80px', minWidth: isOpen ? '270px' : '80px' }" :class="[isOpen ? 'rounded-r-2xl' : '', 'transition-width bg-base-300 duration-300 flex flex-col select-none']">
+  <div :style="{ width: isOpen ? '270px' : '80px', minWidth: isOpen ? '270px' : '80px' }" class="transition-width bg-base-300 duration-300 flex flex-col select-none">
     <div class="py-2 px-4 max-h-[70px] overflow-hidden flex items-center justify-center">
       <div v-if="isOpen">
         <button class="btn text-2xl font-[K2D] font-bold text-primary">BORROWEE</button>

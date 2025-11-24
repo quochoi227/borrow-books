@@ -13,9 +13,9 @@ if (userStore.currentActiveUser) {
 }
 </script>
 <template>
-  <div className="min-h-screen w-full bg-[#020617] relative">
+  <div class="relative min-h-screen w-full bg-[#020617]">
     <div
-      className="absolute inset-0 z-0"
+      class="absolute inset-0 z-0"
       :style="{
         background: '#020617',
         backgroundImage: `
@@ -26,7 +26,7 @@ if (userStore.currentActiveUser) {
         backgroundSize: '32px 32px, 32px 32px, 100% 100%'
       }"
     >
-      <div class="z-10 w-full h-screen flex items-center justify-center">
+      <div class="z-10 flex h-screen w-full items-center justify-center">
         <div class="min-w-lg">
           <Login v-if="route.path.includes('/login')" />
           <Register v-if="route.path.includes('/register')" />
