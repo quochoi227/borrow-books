@@ -29,7 +29,7 @@ function prepareForUpload(canvas) {
       // uploadFormData.value.set(IMAGE_KEY, blob, 'cropped_cover.jpg');
       bookData.anhBia = new File([blob], 'cropped_cover.jpg', { type: 'image/jpeg' });
       
-      console.log(`FormData đã được cập nhật. Key bookImg chỉ có 1 giá trị.`);
+      // console.log(`FormData đã được cập nhật. Key bookImg chỉ có 1 giá trị.`);
     }
   }, 'image/jpeg', 0.9);
 }
@@ -82,11 +82,8 @@ const deleteAnImage = () => {
 const deleteOneInImages = (img, index) => {
   if (img && img.includes('5173')) {
     URL.revokeObjectURL(img)
-    bookImgs.value = bookImgs.value.filter((i) => i !== img)
-    const filesArray = Array.from(bookData.anhChiTiet)
-    filesArray.splice(index, 1)
-    bookData.anhChiTiet = filesArray
-  } else if (img) {
+  }
+  if (img) {
     bookImgs.value = bookImgs.value.filter((i) => i !== img)
     const filesArray = Array.from(bookData.anhChiTiet)
     filesArray.splice(index, 1)
@@ -147,13 +144,13 @@ const cropMode = ref(false);
               v-if="cropMode"
               ref="cropperRef"
               class="w-[200px] h-[300px]"
-              :src="API_ROOT + '/images/' + bookImg"
+              :src="bookImg"
               :stencil-props="{ aspectRatio: 2/3 }"
               @change="change"
             />
             <div v-else>
               <img v-if="bookImg.includes('5173')" :src="bookImg" class="object-contain group-hover:brightness-50 cursor-pointer rounded-lg w-[200px]" alt="hello">
-              <img v-else :src="API_ROOT + '/images/' + bookImg" class="object-contain group-hover:brightness-50 cursor-pointer rounded-lg w-[200px]" alt="">
+              <img v-else :src="bookImg" class="object-contain group-hover:brightness-50 cursor-pointer rounded-lg w-[200px]" alt="">
             </div>
           </div>
           <label v-else for="dropzone-file" class="flex flex-col items-center justify-center w-[180px] h-[270px] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer">
@@ -180,7 +177,7 @@ const cropMode = ref(false);
             </div>
             <div class="w-24 h-24 rounded border-2 border-base-300 overflow-hidden">
               <img v-if="img.includes('5173')" :src="img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
-              <img v-else :src="API_ROOT + '/images/' + img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
+              <img v-else :src="img" class="w-full h-full object-contain group-hover:brightness-50 cursor-pointer" alt="">
             </div>
           </div>
         </div>

@@ -21,7 +21,4 @@ Router.route('/:id')
   ]), bookController.updateABook)
   .delete(bookController.deleteABook)
 
-Router.post('/upload_image', multerUploadMiddleware.upload.single('bookImg'), bookController.uploadImage)
-Router.post('/upload_images', multerUploadMiddleware.upload.array('bookImgs'), bookController.uploadImages)
-
 export const bookRoute = Router

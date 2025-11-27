@@ -81,7 +81,7 @@ const onSelect = (item) => {
           <div class="book-3d h-[200px] flex items-center">
             <div class="book-3d__inner">
               <img class="book-3d__cover"
-            :src="API_ROOT + '/images/' + book.anhBia">
+            :src="book.anhBia">
             </div>
           </div>
           <!-- <img class="h-44 w-full object-contain"

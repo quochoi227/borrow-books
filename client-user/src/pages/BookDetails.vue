@@ -96,7 +96,7 @@ const handleSubmit = () => {
           <div class="w-full">
             <Carousel id="gallery" class="w-full" v-bind="galleryConfig" v-model="currentSlide">
               <Slide v-for="(image, index) in images" :key="index">
-                <img :src="API_ROOT + '/images/' + image" alt="Gallery Image" class="rounded-lg w-full h-full object-contain" />
+                <img :src="image" alt="Gallery Image" class="rounded-lg w-full h-full object-contain" />
               </Slide>
             </Carousel>
     
@@ -107,7 +107,7 @@ const handleSubmit = () => {
                     :class="['w-full h-full object-contain opacity-60 cursor-pointer hover:opacity-100 transition-opacity duration-75', { 'opacity-100': isActive }]"
                     @click="slideTo(currentIndex)"
                   >
-                    <img :src="API_ROOT + '/images/' + image" alt="Thumbnail Image" class="w-full h-full object-contain" />
+                    <img :src="image" alt="Thumbnail Image" class="w-full h-full object-contain" />
                   </div>
                 </template>
               </Slide>

@@ -76,7 +76,6 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="h-[68px] w-full"></div>
   <div class="px-2 py-6">
     <!-- <div class="flex justify-center gap-4">
       <label class="label">
@@ -108,7 +107,7 @@ onMounted(() => {
       <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.REJECTED" class="tab" aria-label="Đã bị từ chối" />
       <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.LOSTED" class="tab" aria-label="Đã làm mất" />
     </div>
-    <table class="table mt-2 bg-base-200">
+    <table class="table mt-2 bg-base-200 overflow-hidden">
       <thead>
         <tr>
           <th>Sách</th>

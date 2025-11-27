@@ -172,7 +172,7 @@ const confirmDelete = async (maSach) => {
               <td class="py-1">{{ book.maSach }}</td>
               <td class="max-w-[230px] flex items-center gap-4 py-1">
                   <div class="w-12 h-18 rounded overflow-hidden">
-                    <img class="w-full h-full object-cover" :src="API_ROOT + '/images/' + book.anhBia" alt="Book image">
+                    <img class="w-full h-full object-cover" :src="book.anhBia" alt="Book image">
                   </div>
               </td>
               <td class="py-1 max-w-[200px]">
