@@ -21,7 +21,6 @@ const handleSubmit = (values) => {
     chucVu: registerInfo.chucVu
   }).then(() => {
     toast.success('Đăng ký tài khoản thành công!')
-    router.push('/login')
   })
 }
 
@@ -67,7 +66,7 @@ const validatePasswordComfirmation = (value) => {
 <template>
   <Form
     @submit="handleSubmit"
-    class="auth-appear z-10 rounded-lg bg-white p-6 shadow-lg"
+    class="auth-appear z-10 mx-auto max-w-xl rounded-lg bg-white p-6 shadow-lg"
   >
     <h1 class="text-center text-2xl font-semibold">Đăng ký tài khoản</h1>
     <fieldset class="fieldset">
@@ -142,12 +141,5 @@ const validatePasswordComfirmation = (value) => {
       <ErrorMessage class="text-red-500" name="matKhauXacNhan" />
     </fieldset>
     <button type="submit" class="btn btn-primary mt-2 w-full">Đăng ký</button>
-    <div class="col-span-12 mt-2 text-center">
-      <RouterLink to="/login">
-        <span class="text-sky-700 hover:text-sky-500 hover:underline"
-          >Đăng nhập</span
-        >
-      </RouterLink>
-    </div>
   </Form>
 </template>

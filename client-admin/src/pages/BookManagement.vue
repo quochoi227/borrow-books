@@ -1,7 +1,7 @@
 <script setup>
 import { ref, toRefs, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { deleteBookAPI } from '@/apis'
+import { deleteBookAPI, fetchBooksAPI } from '@/apis'
 // import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
@@ -37,24 +37,44 @@ const searchValue = ref('')
 const publisherValue = ref('')
 const stockState = ref('available')
 
-watch(() => route.query, (newQuery) => {
-  const page = parseInt(newQuery.page) || 1
-  currentPage.value = page
-  fetchBooks({ page, search: searchValue.value, publisher: publisherValue.value, stockState: stockState.value })
-}, { immediate: true })
+watch(
+  () => route.query,
+  (newQuery) => {
+    const page = parseInt(newQuery.page) || 1
+    currentPage.value = page
+    fetchBooks({
+      page,
+      search: searchValue.value,
+      publisher: publisherValue.value,
+      stockState: stockState.value
+    })
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   fetchPublishers()
 })
 
 const modal = ref(null)
+const exportModal = ref(null)
 
 watch(publisherValue, (newVal) => {
-  fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: newVal, stockState: stockState.value })
+  fetchBooks({
+    page: currentPage.value,
+    search: searchValue.value,
+    publisher: newVal,
+    stockState: stockState.value
+  })
 })
 
 watch(stockState, (newVal) => {
-  fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: publisherValue.value, stockState: newVal })
+  fetchBooks({
+    page: currentPage.value,
+    search: searchValue.value,
+    publisher: publisherValue.value,
+    stockState: newVal
+  })
 })
 
 const handleIncrease = () => {
@@ -87,8 +107,13 @@ const handleDeleteBook = (maSach) => {
     //   currentPage.value--
     //   router.replace({ query: { page: currentPage.value } })
     // }
-    fetchBooks({ page: currentPage.value, search: searchValue.value, publisher: publisherValue.value, stockState: stockState.value })
-    toast.success("Xóa sách thành công")
+    fetchBooks({
+      page: currentPage.value,
+      search: searchValue.value,
+      publisher: publisherValue.value,
+      stockState: stockState.value
+    })
+    toast.success('Xóa sách thành công')
   })
 }
 
@@ -97,13 +122,112 @@ const dialog = createConfirmDialog(ModalDialog)
 const confirmDelete = async (maSach) => {
   const { isCanceled } = await dialog.reveal({ title: 'Xác nhận xóa?' })
 
-  if(isCanceled) return
+  if (isCanceled) return
   handleDeleteBook(maSach)
+}
+
+// Xuất excel
+import * as XLSX from 'xlsx'
+
+// Mock data
+const booksData = [
+  {
+    _id: { $oid: '69245b57b3d59099d06b379b' },
+    maSach: 'B0001',
+    tenSach: 'Lap Trinh',
+    tacGia: 'Scratch',
+    donGia: 34000,
+    soQuyen: 98,
+    soQuyenConLai: 97,
+    namXuatBan: 1987,
+    maNXB: 'NXB001',
+    moTa: 'Sach lap trinh',
+    anhBia:
+      'https://res.cloudinary.com/dkg5xoyc0/image/upload/v1763990357/book_images/f2fwf69zn0fj1gngmfxe.jpg',
+    anhChiTiet: [
+      'https://res.cloudinary.com/.../img1.webp',
+      'https://res.cloudinary.com/.../img2.webp'
+    ],
+    theLoai: ['Sách công nghệ thông tin', 'Truyện cổ tích'],
+    luotMuon: 1,
+    __v: 0
+  }
+]
+
+const exportAllBooksToExcel = () => {
+  fetchBooksAPI({ limit: 999 }).then((res) => {
+    exportBooksToExcel(res.books)
+  })
+}
+
+const exportBooksToExcel = (books) => {
+  // BƯỚC 1: Xử lý dữ liệu (Mapping)
+  // Lọc bỏ _id, __v và format lại mảng
+  const processedData = books.map((book) => ({
+    'Mã sách': book.maSach,
+    'Tên sách': book.tenSach,
+    'Tác giả': book.tacGia,
+    'Đơn giá': book.donGia,
+    'Số lượng': book.soQuyen,
+    'Còn lại': book.soQuyenConLai,
+    'Năm XB': book.namXuatBan,
+    'Mã NXB': book.maNXB,
+    'Mô tả': book.moTa,
+
+    // XỬ LÝ QUAN TRỌNG: Gộp mảng thành chuỗi
+    'Thể loại': book.theLoai ? book.theLoai.join(', ') : '',
+
+    // Ảnh bìa để cuối để dễ xử lý link
+    'Ảnh bìa': book.anhBia
+  }))
+
+  // BƯỚC 2: Tạo Worksheet
+  const worksheet = XLSX.utils.json_to_sheet(processedData)
+
+  // BƯỚC 3: Tạo Hyperlink cho cột "Ảnh bìa"
+  // Xác định vị trí cột ảnh bìa.
+  // Trong map ở trên, "Ảnh bìa" là key thứ 11 -> index là 10 (Cột J)
+  const colIndexImg = 10
+
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+
+  for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+    const address = XLSX.utils.encode_cell({ r: R, c: colIndexImg })
+    const cell = worksheet[address]
+
+    if (cell && cell.v) {
+      // Tạo link click được
+      cell.l = { Target: cell.v }
+      // Đổi text hiển thị cho gọn (Tùy chọn)
+      cell.v = '👉 Xem ảnh'
+    }
+  }
+
+  // Tùy chỉnh độ rộng cột cho đẹp
+  worksheet['!cols'] = [
+    { wch: 10 }, // Mã sách
+    { wch: 20 }, // Tên sách
+    { wch: 15 }, // Tác giả
+    { wch: 10 }, // Đơn giá
+    { wch: 10 }, // SL
+    { wch: 10 }, // Còn lại
+    { wch: 10 }, // Năm
+    { wch: 10 }, // Mã NXB
+    { wch: 20 }, // Mô tả
+    { wch: 30 }, // Thể loại (rộng chút vì gộp chuỗi)
+    { wch: 15 } // Ảnh bìa
+  ]
+
+  // BƯỚC 4: Xuất file
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh sách Sách')
+  XLSX.writeFile(workbook, 'Danh_sach_Sach.xlsx')
 }
 </script>
 
 <template>
-  <div class="w-full h-full relative">
+  <div class="relative h-full w-full">
+    <!-- Add book modal -->
     <dialog ref="modal" class="modal z-0">
       <AddBookModal
         @submit="handleSubmit"
@@ -114,21 +238,51 @@ const confirmDelete = async (maSach) => {
         <button></button>
       </form>
     </dialog>
+    <!-- Open the modal using ID.showModal() method -->
+    <!-- Export books modal -->
+    <dialog ref="exportModal" class="modal">
+      <div class="modal-box">
+        <div class="flex justify-between">
+          <button
+            @click="exportAllBooksToExcel"
+            class="btn bg-[#217346] text-white"
+          >
+            Xuất tất cả sách
+          </button>
+          <button
+            @click="exportBooksToExcel(books)"
+            class="btn bg-[#217346] text-white"
+          >
+            Xuất trang hiện tại
+          </button>
+          <button @click="exportModal.close()" class="btn">Hủy</button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
     <!-- name of each tab group should be unique -->
     <div>
-      <div class="flex gap-2 p-2 rounded-lg items-end">
+      <div class="flex items-end gap-2 rounded-lg p-2">
         <fieldset class="fieldset py-0">
           <legend class="fieldset-legend">Tìm kiếm</legend>
           <label class="input">
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-            <input @input="handleInputChange" type="text" placeholder="Tìm theo tên sách" />
+            <input
+              @input="handleInputChange"
+              type="text"
+              placeholder="Tìm theo tên sách"
+            />
           </label>
         </fieldset>
         <fieldset class="fieldset py-0">
           <legend class="fieldset-legend">Theo NXB</legend>
           <select v-model="publisherValue" class="select">
             <option value="">Tất cả</option>
-            <option v-for="publisher in publishers" :value="publisher.maNXB">{{ publisher.tenNXB }}</option>
+            <option v-for="publisher in publishers" :value="publisher.maNXB">
+              {{ publisher.tenNXB }}
+            </option>
           </select>
         </fieldset>
         <fieldset class="fieldset py-0">
@@ -138,13 +292,43 @@ const confirmDelete = async (maSach) => {
             <option value="unavailable">Đã mượn hết</option>
           </select>
         </fieldset>
-        <div class="flex-1 flex justify-end mt-1">
+        <button
+          @click="exportModal.showModal()"
+          class="btn bg-[#217346] text-white"
+        >
+          <font-awesome-icon icon="fa-solid fa-file-excel" />
+          Xuất Excel
+        </button>
+        <div class="mt-1 flex flex-1 justify-end">
           <div class="join">
-            <button @click="handleDecrease" :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]">«</button>  
-            <RouterLink v-for="n in totalPages" :to="{ query: { page: n }, replace: true }">
-              <button @click="() => currentPage = n" :class="['join-item btn', { 'btn-primary': currentPage === n }]">{{ n }}</button>
+            <button
+              @click="handleDecrease"
+              :class="['join-item btn', { 'btn-disabled': currentPage === 1 }]"
+            >
+              «
+            </button>
+            <RouterLink
+              v-for="n in totalPages"
+              :to="{ query: { page: n }, replace: true }"
+            >
+              <button
+                @click="() => (currentPage = n)"
+                :class="['join-item btn', { 'btn-primary': currentPage === n }]"
+              >
+                {{ n }}
+              </button>
             </RouterLink>
-            <button @click="handleIncrease" :class="['join-item btn', { 'btn-disabled': currentPage === totalPages || totalPages === 0 }]">»</button>
+            <button
+              @click="handleIncrease"
+              :class="[
+                'join-item btn',
+                {
+                  'btn-disabled': currentPage === totalPages || totalPages === 0
+                }
+              ]"
+            >
+              »
+            </button>
           </div>
         </div>
         <button @click="modal.showModal()" class="btn btn-primary">
@@ -153,7 +337,7 @@ const confirmDelete = async (maSach) => {
         </button>
       </div>
       <div class="overflow-x-auto px-2">
-        <table class="table bg-base-200 overflow-hidden">
+        <table class="bg-base-200 table overflow-hidden">
           <thead>
             <tr>
               <th>Mã sách</th>
@@ -168,14 +352,18 @@ const confirmDelete = async (maSach) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(book) in books" class="hover:bg-base-300">
+            <tr v-for="book in books" class="hover:bg-base-300">
               <td class="py-1">{{ book.maSach }}</td>
-              <td class="max-w-[230px] flex items-center gap-4 py-1">
-                  <div class="w-12 h-18 rounded overflow-hidden">
-                    <img class="w-full h-full object-cover" :src="book.anhBia" alt="Book image">
-                  </div>
+              <td class="flex max-w-[230px] items-center gap-4 py-1">
+                <div class="h-18 w-12 overflow-hidden rounded">
+                  <img
+                    class="h-full w-full object-cover"
+                    :src="book.anhBia"
+                    alt="Book image"
+                  />
+                </div>
               </td>
-              <td class="py-1 max-w-[200px]">
+              <td class="max-w-[200px] py-1">
                 <div
                   style="
                     display: -webkit-box;
@@ -184,13 +372,13 @@ const confirmDelete = async (maSach) => {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     word-break: break-word;
-                    "
+                  "
                   class="text-sm leading-snug"
                 >
                   {{ book.tenSach }}
                 </div>
               </td>
-              <td class="py-1 max-w-[200px]">
+              <td class="max-w-[200px] py-1">
                 <div
                   style="
                     display: -webkit-box;
@@ -205,16 +393,35 @@ const confirmDelete = async (maSach) => {
                   {{ book.moTa }}
                 </div>
               </td>
-              <td class="py-1 font-semibold text-amber-600">{{ formatCurrency(book.donGia || 0) }}</td>
-              <td class="py-1">
-                <div :class="['badge', book.soQuyen ? 'badge-warning' : 'badge-error' ]">{{ book.soQuyen }}</div>
+              <td class="py-1 font-semibold text-amber-600">
+                {{ formatCurrency(book.donGia || 0) }}
               </td>
               <td class="py-1">
-                <div :class="['badge', book.soQuyen ? 'badge-warning' : 'badge-error' ]">{{ book.soQuyenConLai }}</div>
+                <div
+                  :class="[
+                    'badge',
+                    book.soQuyen ? 'badge-warning' : 'badge-error'
+                  ]"
+                >
+                  {{ book.soQuyen }}
+                </div>
+              </td>
+              <td class="py-1">
+                <div
+                  :class="[
+                    'badge',
+                    book.soQuyen ? 'badge-warning' : 'badge-error'
+                  ]"
+                >
+                  {{ book.soQuyenConLai }}
+                </div>
               </td>
               <td class="py-1">{{ book.nhaXuatBan?.tenNXB }}</td>
-              <td class="py-1 space-x-1">
-                <button @click="confirmDelete(book._id)" class="btn btn-error btn-sm btn-square">
+              <td class="space-x-1 py-1">
+                <button
+                  @click="confirmDelete(book._id)"
+                  class="btn btn-error btn-sm btn-square"
+                >
                   <font-awesome-icon icon="fa-solid fa-trash" />
                 </button>
                 <RouterLink :to="'/books/' + book._id">

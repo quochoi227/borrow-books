@@ -35,6 +35,11 @@ const router = createRouter({
           path: 'publishers',
           name: 'publishers',
           component: () => import('@/pages/Publishers.vue')
+        },
+        {
+          path: 'staff-register',
+          name: 'staff-register',
+          component: () => import('@/pages/StaffRegister.vue')
         }
       ]
     },
