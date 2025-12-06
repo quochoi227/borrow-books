@@ -2,7 +2,6 @@
 import { adminRegisterAPI } from '@/apis'
 import { reactive } from 'vue'
 import { Form, Field, ErrorMessage } from 'vee-validate'
-import router from '@/router'
 
 import { useToast } from '@/composables/useToast'
 const toast = useToast()
@@ -11,7 +10,7 @@ const registerInfo = reactive({
   hoTenNV: '',
   diaChi: '',
   dienThoai: '',
-  chucVu: 'admin',
+  chucVu: 'staff',
   matKhau: ''
 })
 
@@ -111,7 +110,6 @@ const validatePasswordComfirmation = (value) => {
     <fieldset class="fieldset">
       <legend class="fieldset-legend">Chức vụ</legend>
       <select class="select w-full" v-model="registerInfo.chucVu">
-        <option value="admin">Quản trị viên</option>
         <option value="staff">Nhân viên</option>
       </select>
     </fieldset>

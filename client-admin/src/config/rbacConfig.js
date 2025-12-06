@@ -8,7 +8,8 @@ export const permissions = {
   VIEW_BOOKS: 'view_books',
   VIEW_REQUESTS: 'view_requests',
   VIEW_PUBLISHERS: 'view_publishers',
-  VIEW_STAFF: 'view_staff'
+  VIEW_STAFF: 'view_staff',
+  CHANGE_PASSWORD: 'change_password'
 }
 
 export const rolePermissions = {

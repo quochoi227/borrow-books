@@ -1,34 +1,38 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 // import { getNextSequence } from '../utils/formatters.js'
 
 const userSchema = new mongoose.Schema({
   maDocGia: {
     // type: String
     type: mongoose.Schema.Types.ObjectId,
-    default: () => new mongoose.Types.ObjectId()
+    default: () => new mongoose.Types.ObjectId(),
   },
   hoLot: {
-    type: String
+    type: String,
   },
   ten: {
-    type: String
+    type: String,
   },
   ngaySinh: {
-    type: String
+    type: String,
   },
   phai: {
-    type: String
+    type: String,
   },
   diaChi: {
-    type: String
+    type: String,
   },
   dienThoai: {
-    type: String
+    type: String,
   },
   matKhau: {
-    type: String
-  }
-})
+    type: String,
+  },
+  canThanhToan: {
+    type: Number,
+    default: 0,
+  },
+});
 
 // userSchema.pre('save', async function (next) {
 //   if (!this.maDocGia) {
@@ -38,6 +42,6 @@ const userSchema = new mongoose.Schema({
 //   next()
 // })
 
-const User = mongoose.model('User', userSchema, 'DocGia')
+const User = mongoose.model("User", userSchema, "DocGia");
 
-export default User
+export default User;

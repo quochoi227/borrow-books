@@ -1,17 +1,33 @@
-import pkg from 'lodash'
+import pkg from "lodash";
 // import { Counter } from '../models/counterModel.js'
 
-const { pick } = pkg
+const { pick } = pkg;
 
 export const pickUser = (user) => {
-  if (!user) return {}
-  return pick(user, ['_id', 'hoLot', 'ten', 'ngaySinh', 'diaChi', 'dienThoai', 'maDocGia'])
-}
+  if (!user) return {};
+  return pick(user, [
+    "_id",
+    "hoLot",
+    "ten",
+    "ngaySinh",
+    "diaChi",
+    "dienThoai",
+    "maDocGia",
+    "canThanhToan",
+  ]);
+};
 
 export const pickAdmin = (user) => {
-  if (!user) return {}
-  return pick(user, ['_id', 'maNhanVien', 'hoTenNV', 'diaChi', 'dienThoai', 'chucVu'])
-}
+  if (!user) return {};
+  return pick(user, [
+    "_id",
+    "maNhanVien",
+    "hoTenNV",
+    "diaChi",
+    "dienThoai",
+    "chucVu",
+  ]);
+};
 
 // utils/getNextSequence.js
 
@@ -23,4 +39,3 @@ export const pickAdmin = (user) => {
 //   )
 //   return counter.seq
 // }
-

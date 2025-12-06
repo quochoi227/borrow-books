@@ -1,124 +1,139 @@
-import User from '../models/userModel.js'
-import bcryptjs from 'bcryptjs'
-import ApiError from '../utils/ApiError.js'
-import { StatusCodes } from 'http-status-codes'
-import { JwtProvider } from '../providers/JwtProvider.js'
-import { env } from '../configs/environment.js'
-import ms from 'ms'
-import { pickUser } from '../utils/formatters.js'
+import User from "../models/userModel.js";
+import bcryptjs from "bcryptjs";
+import ApiError from "../utils/ApiError.js";
+import { StatusCodes } from "http-status-codes";
+import { JwtProvider } from "../providers/JwtProvider.js";
+import { env } from "../configs/environment.js";
+import ms from "ms";
+import { pickUser } from "../utils/formatters.js";
 
 const userController = {
   getAllUsers: async (req, res, next) => {
     try {
-      const users = await User.find()
-      res.status(StatusCodes.OK).json(users)
+      const users = await User.find();
+      res.status(StatusCodes.OK).json(users);
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
   register: async (req, res, next) => {
     try {
-      const existUser = await User.findOne({ dienThoai: req.body.dienThoai })
+      const existUser = await User.findOne({ dienThoai: req.body.dienThoai });
       if (existUser) {
-        throw new ApiError(StatusCodes.CONFLICT, 'Người dùng đã tồn tại')
+        throw new ApiError(StatusCodes.CONFLICT, "Người dùng đã tồn tại");
       }
       const userInfo = {
         ...req.body,
-        matKhau: bcryptjs.hashSync(req.body.matKhau, 8)
-      }
-      const newUser = new User(userInfo)
-      const createdUser = await newUser.save()
-      res.status(201).json(pickUser(createdUser))
+        matKhau: bcryptjs.hashSync(req.body.matKhau, 8),
+      };
+      const newUser = new User(userInfo);
+      const createdUser = await newUser.save();
+      res.status(201).json(pickUser(createdUser));
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
   login: async (req, res, next) => {
     try {
       const existUser = await User.findOne({
-        dienThoai: req.body.dienThoai
-      })
-      if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Không tìm thấy tài khoản')
+        dienThoai: req.body.dienThoai,
+      });
+      if (!existUser)
+        throw new ApiError(StatusCodes.NOT_FOUND, "Không tìm thấy tài khoản");
       if (!bcryptjs.compareSync(req.body.matKhau, existUser.matKhau)) {
-        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Số điện thoại hoặc mật khẩu không đúng')
+        throw new ApiError(
+          StatusCodes.NOT_ACCEPTABLE,
+          "Số điện thoại hoặc mật khẩu không đúng"
+        );
       }
       const userInfo = {
         _id: existUser._id,
         maDocGia: existUser.maDocGia,
-        dienThoai: existUser.dienThoai
-      }
+        dienThoai: existUser.dienThoai,
+      };
       const accessToken = await JwtProvider.generateToken(
         userInfo,
         env.ACCESS_TOKEN_SECRET_SIGNATURE,
         5
         // env.ACCESS_TOKEN_LIFE
-      )
+      );
       const refreshToken = await JwtProvider.generateToken(
         userInfo,
         env.REFRESH_TOKEN_SECRET_SIGNATURE,
         15
         // env.REFRESH_TOKEN_LIFE
-      )
+      );
 
       res.cookie(env.ACCESS_TOKEN_USER_NAME, accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none',
-        maxAge: ms('14 days')
-      })
+        sameSite: "none",
+        maxAge: ms("14 days"),
+      });
 
       res.cookie(env.REFRESH_TOKEN_USER_NAME, refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none',
-        maxAge: ms('14 days')
-      })
+        sameSite: "none",
+        maxAge: ms("14 days"),
+      });
 
-      res.status(200).json(pickUser(existUser))
+      res.status(200).json(pickUser(existUser));
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
   logOut: async (req, res, next) => {
     try {
-      res.clearCookie(env.ACCESS_TOKEN_USER_NAME)
-      res.clearCookie(env.REFRESH_TOKEN_USER_NAME)
-      res.status(StatusCodes.OK).json({ loggedOut: true })
+      res.clearCookie(env.ACCESS_TOKEN_USER_NAME);
+      res.clearCookie(env.REFRESH_TOKEN_USER_NAME);
+      res.status(StatusCodes.OK).json({ loggedOut: true });
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
   refreshToken: async (req, res, next) => {
     try {
-      const clientRefreshToken = req.cookies?.userRefreshToken
+      const clientRefreshToken = req.cookies?.userRefreshToken;
       if (!clientRefreshToken) {
-        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized! (token not found) hahaha')
+        throw new ApiError(
+          StatusCodes.UNAUTHORIZED,
+          "Unauthorized! (token not found) hahaha"
+        );
       }
-      const refreshTokenDecoded = await JwtProvider.verifyToken(clientRefreshToken, env.REFRESH_TOKEN_SECRET_SIGNATURE)
+      const refreshTokenDecoded = await JwtProvider.verifyToken(
+        clientRefreshToken,
+        env.REFRESH_TOKEN_SECRET_SIGNATURE
+      );
 
       const userInfo = {
         _id: refreshTokenDecoded._id,
         maDocGia: refreshTokenDecoded.maDocGia,
-        dienThoai: refreshTokenDecoded.dienThoai
-      }
+        dienThoai: refreshTokenDecoded.dienThoai,
+      };
       const newAccessToken = await JwtProvider.generateToken(
         userInfo,
         env.ACCESS_TOKEN_SECRET_SIGNATURE,
         5
         // env.ACCESS_TOKEN_LIFE
-      )
+      );
 
       res.cookie(env.ACCESS_TOKEN_USER_NAME, newAccessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none',
-        maxAge: ms('14 days')
-      })
-      res.status(StatusCodes.OK).json({ accessToken: newAccessToken })
+        sameSite: "none",
+        maxAge: ms("14 days"),
+      });
+      res.status(StatusCodes.OK).json({ accessToken: newAccessToken });
     } catch (error) {
-      next(new ApiError(StatusCodes.FORBIDDEN, 'Please sign in! (Error from refresh token)'))
+      next(
+        new ApiError(
+          StatusCodes.FORBIDDEN,
+          "Please sign in! (Error from refresh token)"
+        )
+      );
     }
-  }
-}
+  },
+};
 
-export default userController
+export default userController;

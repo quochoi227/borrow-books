@@ -42,7 +42,7 @@ const sendMessage = () => {
       timestamp: new Date()
     }
     messages.value.push(botMessage)
-    
+
     nextTick(() => {
       if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight
@@ -54,17 +54,17 @@ const sendMessage = () => {
 }
 
 const formatTime = (date) => {
-  return new Date(date).toLocaleTimeString('vi-VN', { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  }) 
+  return new Date(date).toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 onMounted(() => {
-  const oldMessages = JSON.parse(localStorage.getItem('chat-messages'))
-  if (oldMessages) {
-    messages.value = oldMessages
-  }
+  // const oldMessages = JSON.parse(localStorage.getItem('chat-messages'))
+  // if (oldMessages) {
+  //   messages.value = oldMessages
+  // }
   nextTick(() => {
     if (chatContainer.value) {
       chatContainer.value.scrollTop = chatContainer.value.scrollHeight
@@ -72,69 +72,67 @@ onMounted(() => {
   })
 })
 
-watch(
-  messages,
-  (newMessages) => {
-    localStorage.setItem('chat-messages', JSON.stringify(newMessages))
-  },
-  { deep: true }
-)
+// watch(
+//   messages,
+//   (newMessages) => {
+//     localStorage.setItem('chat-messages', JSON.stringify(newMessages))
+//   },
+//   { deep: true }
+// )
 </script>
 
 <template>
-  <div class="flex flex-col h-[600px] w-full max-w-2xl mx-auto bg-base-200 rounded-xl shadow-lg">
+  <div
+    class="bg-base-200 mx-auto flex h-[600px] w-full max-w-2xl flex-col rounded-xl shadow-lg"
+  >
     <!-- Chat Header -->
-    <div class="bg-primary text-primary-content p-4 rounded-t-xl">
+    <div class="bg-primary text-primary-content rounded-t-xl p-4">
       <h2 class="text-lg font-semibold">AI Chatbot</h2>
     </div>
 
     <!-- Messages Container -->
-    <div 
+    <div
       ref="chatContainer"
-      class="flex-1 overflow-y-auto scroll-smooth p-4 space-y-4"
+      class="flex-1 space-y-4 overflow-y-auto scroll-smooth p-4"
     >
       <div
         v-for="message in messages"
         :key="message.id"
-        :class="[
-          'chat',
-          message.sender === 'user' ? 'chat-end' : 'chat-start'
-        ]"
+        :class="['chat', message.sender === 'user' ? 'chat-end' : 'chat-start']"
       >
         <div class="chat-header mb-1">
           {{ message.sender === 'user' ? 'Bạn' : 'AI' }}
-          <time class="text-xs opacity-50 ml-1">{{ formatTime(message.timestamp) }}</time>
+          <time class="ml-1 text-xs opacity-50">{{
+            formatTime(message.timestamp)
+          }}</time>
         </div>
-        <div 
+        <div
+          v-html="message.text"
           :class="[
             'chat-bubble',
             message.sender === 'user' ? 'chat-bubble-neutral' : ''
           ]"
-        >
-          {{ message.text }}
-        </div>
+        ></div>
       </div>
       <div :class="[showSkeleton ? 'chat chat-start' : 'hidden']">
         <div class="chat-header mb-1">
           Hỗ trợ
-          <time class="text-xs opacity-50 ml-1"></time>
+          <time class="ml-1 text-xs opacity-50"></time>
         </div>
-        <div 
-          class="chat-bubble skeleton"
-        >
+        <div class="chat-bubble skeleton">
           <span class="opacity-70">AI is thinking harder</span>
         </div>
       </div>
     </div>
 
     <!-- Input Area -->
-    <div class="p-4 bg-base-100 border-t border-base-300 rounded-b-lg">
-      <form @submit.prevent="sendMessage" class="w-full join">
+    <div class="bg-base-100 border-base-300 rounded-b-lg border-t p-4">
+      <form @submit.prevent="sendMessage" class="join w-full">
         <input
           v-model="newMessage"
           type="text"
           placeholder="Nhập tin nhắn..."
-          class="input input-bordered flex-1 join-item"
+          class="input input-bordered join-item flex-1"
           @keypress.enter.prevent="sendMessage"
         />
         <button
@@ -148,7 +146,9 @@ watch(
             viewBox="0 0 20 20"
             fill="currentColor"
           >
-            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            <path
+              d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
+            />
           </svg>
           Gửi
         </button>

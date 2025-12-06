@@ -7,69 +7,118 @@ export const fetchAllUsersAPI = async () => {
 }
 
 export const registerAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/users/register`,
+    data
+  )
   return response.data
 }
 
 export const loginAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/login`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/users/login`,
+    data
+  )
   return response.data
 }
 
 export const logoutAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/users/logout`)
+  const response = await authorizedAxiosInstance.delete(
+    `${API_ROOT}/v1/users/logout`
+  )
   return response.data
 }
 
 // Admins
 export const adminRegisterAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/admins/register`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/admins/register`,
+    data
+  )
   return response.data
 }
 
 export const adminLoginAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/admins/login`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/admins/login`,
+    data
+  )
   return response.data
 }
 
 export const adminLogoutAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/admins/logout`)
+  const response = await authorizedAxiosInstance.delete(
+    `${API_ROOT}/v1/admins/logout`
+  )
+  return response.data
+}
+
+export const changePasswordAPI = async (data) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/admins/update`,
+    data
+  )
   return response.data
 }
 
 // Books
-export const fetchBooksAPI = async ({ page, limit, search, publisher, stockState, genres = '[]' }) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books?page=${page}&limit=${limit}&search=${search || ''}&publisher=${publisher || ''}&stockState=${stockState || ''}&genres=${genres}`)
+export const fetchBooksAPI = async ({
+  page,
+  limit,
+  search,
+  publisher,
+  stockState,
+  genres = '[]'
+}) => {
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/books?page=${page}&limit=${limit}&search=${search || ''}&publisher=${publisher || ''}&stockState=${stockState || ''}&genres=${genres}`
+  )
   return response.data
 }
 
 export const getBookDetailsAPI = async (bookId) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/books/${bookId}`)
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/books/${bookId}`
+  )
   return response.data
 }
 
 export const addNewBookAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/books`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/books`,
+    data
+  )
   return response.data
 }
 
 export const updateBookAPI = async (bookId, data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/books/${bookId}`, data)
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/books/${bookId}`,
+    data
+  )
   return response.data
 }
 
 export const deleteBookAPI = async (id) => {
-  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/books/${id}`)
+  const response = await authorizedAxiosInstance.delete(
+    `${API_ROOT}/v1/books/${id}`
+  )
   return response.data
 }
 
 export const uploadImageAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/books/upload_image`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/books/upload_image`,
+    data
+  )
   return response.data
 }
 
 export const uploadImagesAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/books/upload_images`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/books/upload_images`,
+    data
+  )
   return response.data
 }
 
@@ -80,7 +129,25 @@ export const fetchPublishersAPI = async () => {
 }
 
 export const addNewPublisherAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/sources`, data)
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/sources`,
+    data
+  )
+  return response.data
+}
+
+export const updatePublisherAPI = async (publisherId, data) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/sources/${publisherId}`,
+    data
+  )
+  return response.data
+}
+
+export const deletePublisherAPI = async (publisherId) => {
+  const response = await authorizedAxiosInstance.delete(
+    `${API_ROOT}/v1/sources/${publisherId}`
+  )
   return response.data
 }
 
@@ -91,6 +158,9 @@ export const getAllRequests = async () => {
 }
 
 export const updateRequestAPI = async (requestId, data) => {
-  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/requests/${requestId}`, data)
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/requests/${requestId}`,
+    data
+  )
   return response.data
 }

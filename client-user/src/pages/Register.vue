@@ -12,10 +12,10 @@ const registerInfo = reactive({
   hoLot: '',
   ten: '',
   ngaySinh: '',
-  gioiTinh: 'nam',
+  phai: 'nam',
   diaChi: '',
   dienThoai: '',
-  matKhau: '',
+  matKhau: ''
 })
 
 const handleSubmit = (values) => {
@@ -65,64 +65,138 @@ const validatePasswordComfirmation = (value) => {
 }
 </script>
 <template>
-  <Form @submit="handleSubmit" class="auth-appear rounded-lg bg-white p-6 grid grid-cols-12 gap-x-4 w-[700px] shadow-lg">
+  <Form
+    @submit="handleSubmit"
+    class="auth-appear grid w-[700px] grid-cols-12 gap-x-4 rounded-lg bg-white p-6 shadow-lg"
+  >
     <div class="col-span-12">
-      <h1 class="text-center text-2xl font-semibold mb-4">Đăng ký tài khoản</h1>
+      <h1 class="mb-4 text-center text-2xl font-semibold">Đăng ký tài khoản</h1>
     </div>
     <div class="col-span-6">
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Họ lót</legend>
-        <Field name="hoLot" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.hoLot" type="text" class="input" placeholder="Type here" />
+        <Field
+          name="hoLot"
+          :rules="validateEmpty"
+          :validateOnInput="true"
+          v-model="registerInfo.hoLot"
+          type="text"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="hoLot" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Tên</legend>
-        <Field name="ten" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.ten" type="text" class="input" placeholder="Type here" />
+        <Field
+          name="ten"
+          :rules="validateEmpty"
+          :validateOnInput="true"
+          v-model="registerInfo.ten"
+          type="text"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="ten" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Ngày sinh</legend>
-        <Field name="ngaySinh" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.ngaySinh" type="date" class="input" placeholder="Type here" />
+        <Field
+          name="ngaySinh"
+          :rules="validateEmpty"
+          :validateOnInput="true"
+          v-model="registerInfo.ngaySinh"
+          type="date"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="ngaySinh" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Phái</legend>
         <div class="mx-auto">
-          <Field name="gioiTinh" v-model="registerInfo.gioiTinh" id="male" value="nam" type="radio" class="radio radio-primary" />
-          <label for="male" class="text-[14px] ml-1">Nam</label>
-          <Field name="gioiTinh" v-model="registerInfo.gioiTinh" id="female" value="nữ" type="radio" class="radio radio-primary ml-4" />
-          <label for="female" class="text-[14px] ml-1">Nữ</label>
+          <Field
+            name="phai"
+            v-model="registerInfo.phai"
+            id="male"
+            value="nam"
+            type="radio"
+            class="radio radio-primary"
+          />
+          <label for="male" class="ml-1 text-[14px]">Nam</label>
+          <Field
+            name="phai"
+            v-model="registerInfo.phai"
+            id="female"
+            value="nữ"
+            type="radio"
+            class="radio radio-primary ml-4"
+          />
+          <label for="female" class="ml-1 text-[14px]">Nữ</label>
         </div>
       </fieldset>
     </div>
     <div class="col-span-6">
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Địa chỉ</legend>
-        <Field name="diaChi" :rules="validateEmpty" :validateOnInput="true" v-model="registerInfo.diaChi" type="text" class="input" placeholder="Type here" />
+        <Field
+          name="diaChi"
+          :rules="validateEmpty"
+          :validateOnInput="true"
+          v-model="registerInfo.diaChi"
+          type="text"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="diaChi" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Số điện thoại</legend>
-        <Field name="dienThoai" :rules="validatePhoneNumber" :validateOnInput="true" v-model="registerInfo.dienThoai" type="text" class="input" placeholder="Type here" />
+        <Field
+          name="dienThoai"
+          :rules="validatePhoneNumber"
+          :validateOnInput="true"
+          v-model="registerInfo.dienThoai"
+          type="text"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="dienThoai" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Đặt mật khẩu</legend>
-        <Field name="matKhau" :rules="validatePassword" :validateOnInput="true" v-model="registerInfo.matKhau" type="password" class="input" placeholder="Type here" />
+        <Field
+          name="matKhau"
+          :rules="validatePassword"
+          :validateOnInput="true"
+          v-model="registerInfo.matKhau"
+          type="password"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="matKhau" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">Nhập lại mật khẩu</legend>
-        <Field name="matKhauXacNhan" :rules="validatePasswordComfirmation" :validateOnInput="true" type="password" class="input" placeholder="Type here" />
+        <Field
+          name="matKhauXacNhan"
+          :rules="validatePasswordComfirmation"
+          :validateOnInput="true"
+          type="password"
+          class="input"
+          placeholder="Type here"
+        />
         <ErrorMessage class="text-red-500" name="matKhauXacNhan" />
       </fieldset>
     </div>
-    <div class="mt-2 col-span-4 col-start-5">
+    <div class="col-span-4 col-start-5 mt-2">
       <button type="submit" class="btn btn-primary w-full">Đăng ký</button>
     </div>
-    <div class="mt-2 col-span-12 text-center">
+    <div class="col-span-12 mt-2 text-center">
       <RouterLink to="/login">
-        <span class="text-sky-700 hover:text-sky-500 hover:underline">Đăng nhập</span>
+        <span class="text-sky-700 hover:text-sky-500 hover:underline"
+          >Đăng nhập</span
+        >
       </RouterLink>
     </div>
   </Form>

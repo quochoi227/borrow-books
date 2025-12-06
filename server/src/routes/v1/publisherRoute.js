@@ -1,10 +1,14 @@
-import express from 'express'
-import publisherController from '../../controllers/publisherController.js'
+import express from "express";
+import publisherController from "../../controllers/publisherController.js";
 
-const Router = express.Router()
+const Router = express.Router();
 
-Router.route('/')
+Router.route("/")
   .get(publisherController.getAllPublishers)
-  .post(publisherController.addPublisher)
+  .post(publisherController.addPublisher);
 
-export const publisherRoute = Router
+Router.route("/:id")
+  .put(publisherController.updatePublisher)
+  .delete(publisherController.deletePublisher);
+
+export const publisherRoute = Router;

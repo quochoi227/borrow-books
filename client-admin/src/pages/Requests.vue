@@ -3,19 +3,15 @@ import { onMounted, ref, computed } from 'vue'
 import { getAllRequests, updateRequestAPI } from '@/apis'
 import { formatDate } from '@/utils/formatters'
 import { useBookStore } from '@/stores/bookStore'
+import { useAdminStore } from '@/stores/adminStore'
 import { REQUEST_STATUS } from '@/utils/constants'
 
 const bookStore = useBookStore()
+const adminStore = useAdminStore()
 
-const hard = ref(0)
+const { currentActiveAdmin } = adminStore
 
 const requests = ref([])
-
-const waiting = ref(true)
-const borrowing = ref(true)
-const returned = ref(false)
-const rejected = ref(false)
-const losted = ref(false)
 
 const requestStatus = ref(REQUEST_STATUS.PENDING)
 
@@ -37,7 +33,15 @@ const requestsFiltered = computed(() => {
   //     || (losted.value && req.trangThai === REQUEST_STATUS.LOSTED)
   // })
   if (requestStatus.value === 'all') return [...requests.value]
-  return requests.value.filter((req) => req.trangThai === requestStatus.value)
+  return requests.value.filter((req) => {
+    if (requestStatus.value === 'đã trả') {
+      return (
+        req.trangThai === requestStatus.value || req.trangThai === 'quá hạn'
+      )
+    } else {
+      return req.trangThai === requestStatus.value
+    }
+  })
 })
 
 onMounted(() => {
@@ -46,10 +50,12 @@ onMounted(() => {
   })
 })
 
-const updateRequest = (requestId, status, bookId) => {
+const updateRequest = (requestId, status, bookId, userId) => {
   updateRequestAPI(requestId, {
     trangThai: status,
-    maSach: bookId
+    maSach: bookId,
+    maDocGia: userId,
+    maNhanVien: currentActiveAdmin.maNhanVien
   }).then((data) => {
     const target = requests.value.find((req) => req._id === requestId)
     Object.assign(target, data)
@@ -58,13 +64,12 @@ const updateRequest = (requestId, status, bookId) => {
     } else if (status === REQUEST_STATUS.RETURNED) {
       bookStore.incrementBookCopyCount(bookId)
     }
-    hard.value++
   })
 }
 </script>
 <template>
   <div class="px-2 py-6">
-    <h2 class="text-xl font-semibold mb-4 text-center">Yêu cầu mượn sách</h2>
+    <h2 class="mb-4 text-center text-xl font-semibold">Yêu cầu mượn sách</h2>
     <!-- <div class="flex justify-center gap-4">
       <label class="label">
         <input type="checkbox" v-model="waiting" class="checkbox" />
@@ -89,15 +94,57 @@ const updateRequest = (requestId, status, bookId) => {
     </div> -->
     <!-- name of each tab group should be unique -->
     <div class="tabs tabs-box justify-center">
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" value="all" class="tab" aria-label="Tất cả" />
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.PENDING" class="tab" aria-label="Chờ duyệt" />
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.ACCEPT" class="tab" aria-label="Đang mượn" />
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.RETURNED" class="tab" aria-label="Đã trả" />
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.REJECTED" class="tab" aria-label="Đã bị từ chối" />
-      <input v-model="requestStatus" type="radio" name="my_tabs_1" :value="REQUEST_STATUS.LOSTED" class="tab" aria-label="Đã làm mất" />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        value="all"
+        class="tab"
+        aria-label="Tất cả"
+      />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        :value="REQUEST_STATUS.PENDING"
+        class="tab"
+        aria-label="Chờ duyệt"
+      />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        :value="REQUEST_STATUS.ACCEPT"
+        class="tab"
+        aria-label="Đang mượn"
+      />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        :value="REQUEST_STATUS.RETURNED"
+        class="tab"
+        aria-label="Đã trả"
+      />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        :value="REQUEST_STATUS.REJECTED"
+        class="tab"
+        aria-label="Đã bị từ chối"
+      />
+      <input
+        v-model="requestStatus"
+        type="radio"
+        name="my_tabs_1"
+        :value="REQUEST_STATUS.LOSTED"
+        class="tab"
+        aria-label="Đã làm mất"
+      />
     </div>
-    <div class="w-full overflow-x-auto mt-2">
-      <table class="table bg-base-200 overflow-hidden">
+    <div class="mt-2 w-full overflow-x-auto">
+      <table class="bg-base-200 table overflow-hidden">
         <thead>
           <tr>
             <th>TT</th>
@@ -113,9 +160,15 @@ const updateRequest = (requestId, status, bookId) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(req, index) in requestsFiltered" :key="req._id" class="hover:bg-base-300">
+          <tr
+            v-for="(req, index) in requestsFiltered"
+            :key="req._id"
+            class="hover:bg-base-300"
+          >
             <td>{{ index + 1 }}</td>
-            <td class="whitespace-nowrap">{{ req.docGia?.hoLot + ' ' + req.docGia?.ten }}</td>
+            <td class="whitespace-nowrap">
+              {{ req.docGia?.hoLot + ' ' + req.docGia?.ten }}
+            </td>
             <td>{{ req.sach.maSach }}</td>
             <td
               style="
@@ -127,42 +180,120 @@ const updateRequest = (requestId, status, bookId) => {
                 word-break: break-word;
                 line-height: 1.5;
                 max-height: 3em;
-                "
+              "
               class="text-sm leading-snug"
-            >{{ req.sach.tenSach }}</td>
+            >
+              {{ req.sach.tenSach }}
+            </td>
             <td>{{ formatDate(req.ngayYeuCau) }}</td>
-            <td class="whitespace-nowrap">{{ req.ngayMuon ? formatDate(req.ngayMuon) : '' }}</td>
-            <td class="whitespace-nowrap">{{ req.hanTra ? formatDate(req.hanTra) : '' }}</td>
-            <td class="whitespace-nowrap">{{ req.ngayTra ? formatDate(req.ngayTra) : '' }}</td>
+            <td class="whitespace-nowrap">
+              {{ req.ngayMuon ? formatDate(req.ngayMuon) : '' }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ req.hanTra ? formatDate(req.hanTra) : '' }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ req.ngayTra ? formatDate(req.ngayTra) : '' }}
+            </td>
             <td>
-              <span v-if="req.hanTra && Date.now() > new Date(req.hanTra).getTime()" class="badge badge-error">Trễ</span>
-              <span v-else :class="['badge whitespace-nowrap', statusMap[req.trangThai]]">{{ req.trangThai }}</span>
+              <span
+                v-if="req.hanTra && Date.now() > new Date(req.hanTra).getTime()"
+                class="badge badge-error"
+                >Trễ</span
+              >
+              <span
+                v-else
+                :class="['badge whitespace-nowrap', statusMap[req.trangThai]]"
+                >{{ req.trangThai }}</span
+              >
             </td>
             <td>
               <div class="flex gap-1">
-                <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Chấp nhận">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.ACCEPT, req.maSach)" class="btn btn-square btn-xs btn-success">
+                <div
+                  v-if="req.trangThai === REQUEST_STATUS.PENDING"
+                  class="tooltip"
+                  data-tip="Chấp nhận"
+                >
+                  <button
+                    @click="
+                      updateRequest(
+                        req._id,
+                        REQUEST_STATUS.ACCEPT,
+                        req.maSach,
+                        req.maDocGia
+                      )
+                    "
+                    class="btn btn-square btn-xs btn-success"
+                  >
                     <font-awesome-icon icon="fa-solid fa-check" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === REQUEST_STATUS.PENDING" class="tooltip" data-tip="Từ chối">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.REJECTED, req.maSach)" class="btn btn-square btn-xs btn-error">
+                <div
+                  v-if="req.trangThai === REQUEST_STATUS.PENDING"
+                  class="tooltip"
+                  data-tip="Từ chối"
+                >
+                  <button
+                    @click="
+                      updateRequest(
+                        req._id,
+                        REQUEST_STATUS.REJECTED,
+                        req.maSach
+                      )
+                    "
+                    class="btn btn-square btn-xs btn-error"
+                  >
                     <font-awesome-icon icon="fa-solid fa-xmark" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === REQUEST_STATUS.REJECTED" class="tooltip" data-tip="Hoàn tác">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)" class="btn btn-square btn-xs btn-warning">
+                <div
+                  v-if="req.trangThai === REQUEST_STATUS.REJECTED"
+                  class="tooltip"
+                  data-tip="Hoàn tác"
+                >
+                  <button
+                    @click="
+                      updateRequest(req._id, REQUEST_STATUS.PENDING, req.maSach)
+                    "
+                    class="btn btn-square btn-xs btn-warning"
+                  >
                     <font-awesome-icon icon="fa-solid fa-rotate-left" />
                   </button>
                 </div>
-                <div v-if="req.trangThai === 'đang mượn'" class="tooltip" data-tip="Đã trả sách">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.RETURNED, req.maSach)" class="btn btn-square btn-xs btn-success">
-                    <font-awesome-icon icon="fa-solid fa-person-walking-arrow-loop-left" />
+                <div
+                  v-if="req.trangThai === 'đang mượn'"
+                  class="tooltip"
+                  data-tip="Đã trả sách"
+                >
+                  <button
+                    @click="
+                      updateRequest(
+                        req._id,
+                        REQUEST_STATUS.RETURNED,
+                        req.maSach
+                      )
+                    "
+                    class="btn btn-square btn-xs btn-success"
+                  >
+                    <font-awesome-icon
+                      icon="fa-solid fa-person-walking-arrow-loop-left"
+                    />
                   </button>
                 </div>
-                <div v-if="req.trangThai === 'đang mượn'" class="tooltip" data-tip="Làm mất">
-                  <button @click="updateRequest(req._id, REQUEST_STATUS.LOSTED, req.maSach)" class="btn btn-square btn-xs btn-error">
-                    <font-awesome-icon icon="fa-solid fa-person-circle-exclamation" />
+                <div
+                  v-if="req.trangThai === 'đang mượn'"
+                  class="tooltip"
+                  data-tip="Làm mất"
+                >
+                  <button
+                    @click="
+                      updateRequest(req._id, REQUEST_STATUS.LOSTED, req.maSach)
+                    "
+                    class="btn btn-square btn-xs btn-error"
+                  >
+                    <font-awesome-icon
+                      icon="fa-solid fa-person-circle-exclamation"
+                    />
                   </button>
                 </div>
               </div>

@@ -5,11 +5,13 @@ import { deleteBookAPI, fetchBooksAPI } from '@/apis'
 // import { toast } from 'vue3-toastify'
 import ModalDialog from '@/components/ModalDialog.vue'
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
-import { API_ROOT } from '@/utils/constants'
 import { formatCurrency } from '@/utils/formatters'
 import AddBookModal from '@/components/AddBookModal.vue'
 import { useDebounceFn } from '@/composables/useDebounceFn'
 import { useBookStore } from '@/stores/bookStore'
+import { useAdminStore } from '@/stores/adminStore'
+import { permissions } from '@/config/rbacConfig'
+import { usePermission } from '@/composables/usePermission'
 
 import { useToast } from '@/composables/useToast'
 const toast = useToast()
@@ -53,6 +55,13 @@ watch(
 )
 
 onMounted(() => {
+  const adminStore = useAdminStore()
+  const { currentActiveAdmin } = adminStore
+
+  const { hasPermission } = usePermission(currentActiveAdmin.chucVu)
+  if (!hasPermission(permissions.VIEW_BOOKS)) {
+    router.push('/dashboard')
+  }
   fetchPublishers()
 })
 

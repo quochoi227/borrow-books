@@ -197,7 +197,7 @@ const isOpen = ref(true)
           </router-link>
         </div>
         <router-link
-          v-if="hasPermission(permissions.VIEW_PUBLISHERS) && isOpen"
+          v-if="hasPermission(permissions.VIEW_STAFF) && isOpen"
           to="/staff-register"
         >
           <li>
@@ -208,15 +208,15 @@ const isOpen = ref(true)
               ]"
             >
               <font-awesome-icon
-                icon="fa-solid fa-house-user"
+                icon="fa-solid fa-clipboard-user"
                 class="text-xl"
               />
-              <p class="whitespace-nowrap">Quản lý nhân viên</p>
+              <p class="whitespace-nowrap">Tạo tài khoản nhân viên</p>
             </span>
           </li>
         </router-link>
         <div
-          v-else-if="hasPermission(permissions.VIEW_PUBLISHERS)"
+          v-else-if="hasPermission(permissions.VIEW_STAFF)"
           data-tip="Nhà xuất bản"
           class="tooltip tooltip-right"
         >
@@ -230,9 +230,45 @@ const isOpen = ref(true)
                 ]"
               >
                 <font-awesome-icon
-                  icon="fa-solid fa-house-user"
+                  icon="fa-solid fa-clipboard-user"
                   class="text-xl"
                 />
+              </span>
+            </li>
+          </router-link>
+        </div>
+        <!-- Change password -->
+        <router-link
+          v-if="hasPermission(permissions.CHANGE_PASSWORD) && isOpen"
+          to="/change-password"
+        >
+          <li>
+            <span
+              :class="[
+                sidebarItemClassess,
+                { [activeItemClasses]: route.path === '/change-password' }
+              ]"
+            >
+              <font-awesome-icon icon="fa-solid fa-key" class="text-xl" />
+              <p class="whitespace-nowrap">Đổi mật khẩu</p>
+            </span>
+          </li>
+        </router-link>
+        <div
+          v-else-if="hasPermission(permissions.CHANGE_PASSWORD)"
+          data-tip="Đổi mật khẩu"
+          class="tooltip tooltip-right"
+        >
+          <router-link to="/staff-register">
+            <li>
+              <span
+                class="py-3"
+                :class="[
+                  sidebarItemClassess,
+                  { [activeItemClasses]: route.path === '/staff-register' }
+                ]"
+              >
+                <font-awesome-icon icon="fa-solid fa-key" class="text-xl" />
               </span>
             </li>
           </router-link>

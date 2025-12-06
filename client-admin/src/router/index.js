@@ -40,6 +40,11 @@ const router = createRouter({
           path: 'staff-register',
           name: 'staff-register',
           component: () => import('@/pages/StaffRegister.vue')
+        },
+        {
+          path: 'change-password',
+          name: 'change-password',
+          component: () => import('@/pages/ChangePassword.vue')
         }
       ]
     },
